@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sree Polash Kumer Sarker | Interactive Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            darkBg: '#090a0f',
+                            cardBg: 'rgba(17, 19, 30, 0.75)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            textMuted: '#94a3b8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- React and Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090a0f;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(15, 18, 32, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .glow-button {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-button::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(90deg, #6366f1, #3b82f6, #ec4899);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .glow-button:hover::after {
+            opacity: 0.75;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="text-slate-100 selection:bg-indigo-500/30 selection:text-white">
+
+    <!-- Ambient Background Decorative Orbs -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[120px] animate-pulse" style="animation-duration: 8s;"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-teal-900/10 blur-[150px] animate-pulse" style="animation-duration: 12s;"></div>
+        <div class="absolute top-[40%] right-[20%] w-[35vw] h-[35vw] rounded-full bg-rose-950/10 blur-[130px] animate-pulse" style="animation-duration: 10s;"></div>
+    </div>
+
+    <!-- ROOT CONTAINER FOR REACT APP -->
+    <div id="root" class="relative z-10"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Custom typewriter script for subtle subtitle introductions
+        function Typewriter({ words, speed = 100, delay = 2000 }) {
+            const [currentWordIndex, setCurrentWordIndex] = useState(0);
+            const [currentText, setCurrentText] = useState('');
+            const [isDeleting, setIsDeleting] = useState(false);
+
+            useEffect(() => {
+                let timer;
+                const fullWord = words[currentWordIndex];
+
+                if (!isDeleting) {
+                    timer = setTimeout(() => {
+                        setCurrentText(fullWord.substring(0, currentText.length + 1));
+                    }, speed);
+
+                    if (currentText === fullWord) {
+                        timer = setTimeout(() => setIsDeleting(true), delay);
+                    }
+                } else {
+                    timer = setTimeout(() => {
+                        setCurrentText(fullWord.substring(0, currentText.length - 1));
+                    }, speed / 2);
+
+                    if (currentText === '') {
+                        setIsDeleting(false);
+                        setCurrentWordIndex((prev) => (prev + 1) % words.length);
+                    }
+                }
+
+                return () => clearTimeout(timer);
+            }, [currentText, isDeleting, currentWordIndex, words, speed, delay]);
+
+            return (
+                <span className="font-mono font-bold text-teal-400">
+                    {currentText}
+                    <span className="animate-ping">|</span>
+                </span>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            // Active role selector for our "Choose Your Path" Morpher
+            // Roles: 'all', 'economist', 'accountant', 'defender', 'creative'
+            const [activeRole, setActiveRole] = useState('all');
+            
+            // App-wide state variables
+            const [copied, setCopied] = useState(false);
+            const [galleryFilter, setGalleryFilter] = useState('all');
+            const [lightboxItem, setLightboxItem] = useState(null);
+            const [contactSubmitted, setContactSubmitted] = useState(false);
+
+            // Budget Game States
+            const [spending, setSpending] = useState(50);
+            const [taxRate, setTaxRate] = useState(30);
+            const [interestRate, setInterestRate] = useState(5.0);
+            const [reserveRatio, setReserveRatio] = useState(10);
+
+            // Derived game stats
+            const gdpGrowth = Math.max(1.2, ((spending * 0.15) + (20 - interestRate * 1.5) - (taxRate * 0.08)).toFixed(1));
+            const auditRating = Math.min(100, Math.max(40, (100 - (spending * 0.3) + (taxRate * 0.6) - (reserveRatio * 0.5)).toFixed(0)));
+            const systemSafety = Math.min(100, Math.max(35, ((reserveRatio * 4.5) + (100 - spending * 0.5) + 15).toFixed(0)));
+            const crowdSatisfaction = Math.max(20, (parseFloat(gdpGrowth) * 8 + (50 - taxRate) * 0.8).toFixed(0));
+
+            // Decrypter Game States
+            const [cipherShift, setCipherShift] = useState(3);
+            const encryptedMessage = "vshh srodvk nxphu vdunhu hfrqrplfv dqg fbehu vhfxulwb hgsh";
+            
+            // Function to dynamically decrypt basic Caesar shift
+            const decryptText = (str, shift) => {
+                return str.replace(/[a-z]/g, (char) => {
+                    let code = char.charCodeAt(0) - 97;
+                    let decryptedCode = (code - shift + 26) % 26;
+                    return String.fromCharCode(decryptedCode + 97);
+                });
+            };
+
+            // Terminal State Configuration
+            const [terminalHistory, setTerminalHistory] = useState([
+                { type: 'input', text: 'system_diag --init' },
+                { type: 'output', text: 'Sree Polash Kumer Sarker - Dynamic Terminal v2.1 initialized.' },
+                { type: 'output', text: 'Type "help" to view list of secure commands.' }
+            ]);
+            const [terminalInput, setTerminalInput] = useState('');
+            const terminalEndRef = useRef(null);
+
+            const handleTerminalSubmit = (e) => {
+                e.preventDefault();
+                const cmd = terminalInput.trim().toLowerCase();
+                if (!cmd) return;
+
+                let response = '';
+                if (cmd === 'help') {
+                    response = 'Available Commands: "about", "skills", "decrypt", "scholarship", "clear"';
+                } else if (cmd === 'about') {
+                    response = 'Sree Polash Kumer Sarker: Postgraduate scholar at Nalanda University studying Economics, blending accounting precision with cryptographic safety protocols.';
+                } else if (cmd === 'skills') {
+                    response = 'Tech Stack: Python Data Libraries (Pandas, NumPy), Advanced Financial Auditing, Network Cryptography Principles, UI Design (Tailwind, Video Suite).';
+                } else if (cmd === 'decrypt') {
+                    response = 'System Bypass Complete: "polash kumar sarker economics and cyber security edge" decoded!';
+                } else if (cmd === 'scholarship') {
+                    response = 'Honored ICCR (Indian Council for Cultural Relations) Postgraduate Scholar for Master of Science in Economics.';
+                } else if (cmd === 'clear') {
+                    setTerminalHistory([]);
+                    setTerminalInput('');
+                    return;
+                } else {
+                    response = `Command "${cmd}" not recognized. Try typing "help" for a list of diagnostics.`;
+                }
+
+                setTerminalHistory(prev => [
+                    ...prev, 
+                    { type: 'input', text: cmd },
+                    { type: 'output', text: response }
+                ]);
+                setTerminalInput('');
+            };
+
+            const runQuickCommand = (cmdText) => {
+                setTerminalHistory(prev => [
+                    ...prev,
+                    { type: 'input', text: cmdText },
+                    { type: 'output', text: cmdText === 'decrypt' ? 'System Bypass Complete: "polash kumar sarker economics and cyber security edge" decoded!' : cmdText === 'scholarship' ? 'Honored ICCR Postgraduate Scholar for Master of Science in Economics.' : 'Processing secure query...' }
+                ]);
+            };
+
+            useEffect(() => {
+                terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [terminalHistory]);
+
+            const timelineEvents = [
+                {
+                    year: "Present",
+                    title: "MSc in Economics Researcher",
+                    institution: "Nalanda University",
+                    details: "Awarded the highly competitive ICCR Postgraduate Scholarship. Deep-diving into macroeconomics, game theory, and statistical modeling.",
+                    category: "economist"
+                },
+                {
+                    year: "2026",
+                    title: "Branding & Media Lead (Artha Nalanda '26)",
+                    institution: "Nalanda Economics Dept.",
+                    details: "Managed visual identity, interactive promotional videos, and community branding for the inaugural campus economic forum.",
+                    category: "creative"
+                },
+                {
+                    year: "2025",
+                    title: "Cyber Security Training & Certification",
+                    institution: "BdREN / NORDUnet Network Security",
+                    details: "Successfully completed hands-on modules in Practical Cryptography, Network Auditing, and System Defense Protocols.",
+                    category: "defender"
+                },
+                {
+                    year: "Graduate",
+                    title: "BBA in Accounting (Honors)",
+                    institution: "Rajshahi College",
+                    details: "Built an absolute mastery of commercial ledgers, corporate taxation guidelines, and standard financial auditing practices.",
+                    category: "accountant"
+                },
+                {
+                    year: "Leadership Track",
+                    title: "Executive Media Strategist",
+                    institution: "Youth Club of Bangladesh",
+                    details: "Coordinated volunteer outreach campaigns, edited promotional highlights, and managed brand presence for local impact initiatives.",
+                    category: "creative"
+                }
+            ];
+
+            const portfolioProjects = [
+                {
+                    id: 1,
+                    title: "Artha Nalanda Branding Package",
+                    category: "creative",
+                    tags: ["Photoshop", "Illustrator", "Video Promo"],
+                    details: "Created the complete visual system, promotional banners, and registration maps for the grand Economics Fest.",
+                    icon: "fa-palette"
+                },
+                {
+                    id: 2,
+                    title: "Quantitative Macroeconomic Sandbox",
+                    category: "economist",
+                    tags: ["Python", "Pandas", "Matplotlib"],
+                    details: "Developed a functional economic model analyzing how tax reforms and monetary rate adjustments impact local GDP growth.",
+                    icon: "fa-chart-line"
+                },
+                {
+                    id: 3,
+                    title: "Corporate Balance Auditing Assistant",
+                    category: "accountant",
+                    tags: ["Advanced Excel", "VBA Macros", "Accounting"],
+                    details: "An optimized spreadsheet tool to rapidly spot anomalies in double-entry books and flags accounting standard issues.",
+                    icon: "fa-calculator"
+                },
+                {
+                    id: 4,
+                    title: "Cryptographic Cipher Validator",
+                    category: "defender",
+                    tags: ["Python", "Cryptography", "Security"],
+                    details: "A simple educational console script demonstrating symmetrical encryption shifts and secure password hashing concepts.",
+                    icon: "fa-shield-halved"
+                },
+                {
+                    id: 5,
+                    title: "Youth Club Campaign Reel",
+                    category: "creative",
+                    tags: ["Premiere Pro", "Social Media", "Video Editing"],
+                    details: "Produced a captivating documentary highlighting local food distributions, community programs, and clean-up drives.",
+                    icon: "fa-video"
+                },
+                {
+                    id: 6,
+                    title: "Equilibrium & Resource Planner",
+                    category: "economist",
+                    tags: ["Economic Modeling", "Microeconomics"],
+                    details: "Drafted conceptual frameworks exploring game theory models for optimized community micro-finance pools.",
+                    icon: "fa-network-wired"
+                }
+            ];
+
+            const creativeWorks = [
+                {
+                    id: 1,
+                    title: "Artha Nalanda Fest Poster",
+                    category: "graphics",
+                    categoryLabel: "Graphic Design",
+                    description: "A sleek, clean, and balanced poster designed to invite university students and guest speakers to our economics fest.",
+                    image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=800",
+                    icon: "fa-palette"
+                },
+                {
+                    id: 2,
+                    title: "Nalanda Campus Life Reel",
+                    category: "video",
+                    categoryLabel: "Video Editing",
+                    description: "A fast-tempo highlight compilation capturing outdoor activities, class projects, and student events.",
+                    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800",
+                    icon: "fa-video"
+                },
+                {
+                    id: 3,
+                    title: "Golden Hour Over Padma River",
+                    category: "photography",
+                    categoryLabel: "Photography",
+                    description: "A crisp landscape photograph focusing on warm evening light reflecting off the ripples of the Padma River.",
+                    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800",
+                    icon: "fa-camera"
+                },
+                {
+                    id: 4,
+                    title: "Online Safety Cheat Sheet",
+                    category: "graphics",
+                    categoryLabel: "Graphic Design",
+                    description: "A simple and vibrant visual helper document sharing clean icons to avoid phishing and keep devices locked.",
+                    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
+                    icon: "fa-shield-halved"
+                },
+                {
+                    id: 5,
+                    title: "Lectures Series Highlight Intro",
+                    category: "video",
+                    categoryLabel: "Video Editing",
+                    description: "An animated video bumper incorporating smooth typography and background scores to introduce guest speakers.",
+                    image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=800",
+                    icon: "fa-film"
+                },
+                {
+                    id: 6,
+                    title: "Nalanda Heritage Brick Ruins",
+                    category: "photography",
+                    categoryLabel: "Photography",
+                    description: "An artistic morning shot capturing shadow dynamics on the historic red-brick structures of ancient Nalanda.",
+                    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=80&w=800",
+                    icon: "fa-images"
+                }
+            ];
+
+            const copyEmailToClipboard = () => {
+                const tempInput = document.createElement('input');
+                tempInput.value = 'sreepolash.nus@gmail.com';
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            // Dynamic color themes based on active path
+            const getRoleAccent = () => {
+                switch(activeRole) {
+                    case 'economist': return 'text-emerald-400 border-emerald-500/30 ring-emerald-500/20';
+                    case 'accountant': return 'text-cyan-400 border-cyan-500/30 ring-cyan-500/20';
+                    case 'defender': return 'text-indigo-400 border-indigo-500/30 ring-indigo-500/20';
+                    case 'creative': return 'text-rose-400 border-rose-500/30 ring-rose-500/20';
+                    default: return 'text-teal-400 border-teal-500/30 ring-teal-500/20';
+                }
+            };
+
+            const getRoleGlowBg = () => {
+                switch(activeRole) {
+                    case 'economist': return 'rgba(16, 185, 129, 0.05)';
+                    case 'accountant': return 'rgba(6, 182, 212, 0.05)';
+                    case 'defender': return 'rgba(99, 102, 241, 0.05)';
+                    case 'creative': return 'rgba(244, 63, 94, 0.05)';
+                    default: return 'rgba(20, 184, 166, 0.05)';
+                }
+            };
+
+            const getRoleBorderGlow = () => {
+                switch(activeRole) {
+                    case 'economist': return 'hover:border-emerald-500/30';
+                    case 'accountant': return 'hover:border-cyan-500/30';
+                    case 'defender': return 'hover:border-indigo-500/30';
+                    case 'creative': return 'hover:border-rose-500/30';
+                    default: return 'hover:border-teal-500/30';
+                }
+            };
+
+            const filteredProjects = activeRole === 'all' 
+                ? portfolioProjects 
+                : portfolioProjects.filter(p => p.category === activeRole);
+
+            const filteredTimeline = activeRole === 'all' 
+                ? timelineEvents 
+                : timelineEvents.filter(t => t.category === activeRole);
+
+            const filteredGallery = galleryFilter === 'all'
+                ? creativeWorks
+                : creativeWorks.filter(w => w.category === galleryFilter);
+
+            return (
+                <div className="min-h-screen flex flex-col relative z-10 transition-all duration-700 pb-12" style={{ backgroundColor: '#090a0f' }}>
+                    
+                    {/* Ambient Background Decorative Orbs */}
+                    <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+                        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }}></div>
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-teal-900/10 blur-[150px] animate-pulse" style={{ animationDuration: '12s' }}></div>
+                        <div className="absolute top-[40%] right-[20%] w-[35vw] h-[35vw] rounded-full bg-rose-950/10 blur-[130px] animate-pulse" style={{ animationDuration: '10s' }}></div>
+                    </div>
+
+                    {/* Main Sticky Navigation */}
+                    <nav className="sticky top-0 z-50 glass-panel border-b border-white/5 px-6 py-4 transition-all">
+                        <div className="max-w-6xl mx-auto flex items-center justify-between">
+                            <a href="#" className="flex items-center space-x-3 group">
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-rose-500 flex items-center justify-center font-extrabold text-white text-base shadow-lg shadow-indigo-500/20">
+                                    SP
+                                </div>
+                                <span className="font-bold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-400 group-hover:to-rose-400 transition-all">
+                                    Polash Kumar
+                                </span>
+                            </a>
+                            <div className="hidden md:flex items-center space-x-6 text-sm font-semibold text-slate-300">
+                                <a href="#morpher-panel" className="hover:text-white transition-all">Interactive Paths</a>
+				<a href="#journey" className="hover:text-white transition-all">My Journey</a>
+                                <a href="#projects" className="hover:text-white transition-all">Works</a>
+                                <a href="#creative-gallery" className="hover:text-white transition-all">Studio</a>
+                                <a href="#contact" className="hover:text-white transition-all">Contact</a>
+                            </div>
+                            <a href="#cyber-terminal" className="hidden lg:flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:brightness-110 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md transition-all">
+                                
+                                
+                            </a>
+                        </div>
+                    </nav>
+
+                    {/* Hero Frame with Custom Avatar Placeholder */}
+                    <header className="relative py-20 px-6 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
+                        <div className="lg:col-span-7 space-y-6 text-left">
+                            <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-xs text-slate-300">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>Postgraduate Scholar • Nalanda University</span>
+                            </div>
+                            
+                            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-none">
+                                Hi, I am <br/>
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-teal-300 to-rose-400">
+                                    Sree Polash Kumer
+                                </span>
+                            </h1>
+
+                            <p className="text-lg text-slate-300 max-w-xl font-light">
+                                I study how money, policies, and human behavior connect. I balance my analytical work in <span className="text-teal-400 font-medium">Economics & Accounting</span> with a deep passion for <span className="text-indigo-400 font-medium">Video Editing</span> and a keen eye for <span className="text-rose-400 font-medium">Graphic Media Design</span>.
+                            </p>
+
+                            <div className="pt-2 text-sm">
+                                <span className="text-slate-400 mr-2">Core expertise:</span>
+                                <Typewriter words={["Economics", "Accounting & Finance", "Video Editing", "Graphic Design"]} />
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-4 pt-4">
+                                <a href="#morpher-panel" className="bg-white text-slate-950 font-bold px-6 py-3 rounded-2xl hover:bg-slate-200 transition-all text-sm flex items-center space-x-2">
+                                    <span>Explore Interactive Paths</span>
+                                    <i className="fa-solid fa-arrow-down text-xs"></i>
+                                </a>
+                                <button onClick={copyEmailToClipboard} className="bg-white/5 hover:bg-white/10 border border-white/10 font-bold px-5 py-3 rounded-2xl transition-all text-sm flex items-center space-x-2">
+                                    <i className="fa-regular fa-envelope"></i>
+                                    <span>{copied ? 'Copied Email!' : 'Get Email Address'}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Professional Avatar Image Showcase Container */}
+                        <div className="lg:col-span-5 flex justify-center relative">
+                            {/* Glowing Orb backdrop decoration */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-rose-500 rounded-full blur-[40px] opacity-20 transform scale-75"></div>
+                            
+                            {/* Main Frame with custom orbit indicator lines */}
+                            <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full p-4 border border-white/5 bg-gradient-to-tr from-white/5 to-white/0 backdrop-blur-xl shadow-2xl flex items-center justify-center">
+                                {/* Rotating orbital indicator border */}
+                                <div className="absolute inset-0 border-2 border-dashed border-slate-500/10 rounded-full animate-[spin_50s_linear_infinite]"></div>
+                                <div className="absolute w-full h-full border-t border-b border-indigo-500/20 rounded-full animate-[spin_20s_linear_infinite]"></div>
+                                
+
+
+
+
+
+ {/* ================================================================Inner rounded photo frame ==================================================*/}
+
+                                <div className="w-full h-full rounded-full overflow-hidden border border-white/10 relative bg-slate-900 group">
+                                    {/* User Photo (Fallback to Placehold with customized colors matching overall look) */}
+                                    <img 
+                                        src="Polash Kumer.png" 
+                                        alt="Sree Polash Kumer" 
+                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105"
+                                        onError={(e) => {
+                                            e.target.src = "https://placehold.co/400x400/11131e/ffffff?text=Polash+Kumar";
+                                        }}
+                                    />
+                                    {/* Note for User: Simply replace the placeholder URL above with your actual photo file path (e.g. "polash.jpg" or an online URL) */}
+                                    
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex flex-col justify-end p-6 text-center">
+                                        <p className="text-white font-bold text-sm tracking-wide">Polash Kumer</p>
+                                        <p className="text-slate-400 text-xs">MSc Student & Creator</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Interactive Morphing Path Controls */}
+                    <section id="morpher-panel" className="py-24 px-6 border-t border-white/5 relative z-10 bg-black/10">
+                        <div className="max-w-6xl mx-auto space-y-12">
+                            <div className="text-center max-w-2xl mx-auto space-y-4">
+                                <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                                    Choose Your Path
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                    Discover My Multi-Faceted Profile
+                                </h2>
+                                <p className="text-slate-400 text-sm">
+                                    I am proud to work across different fields. Click any of the specialized profiles below to watch the entire portfolio adapt to showcase that role's core expertise, projects, and history!
+                                </p>
+                            </div>
+
+                            {/* Interactive Path Selector Pills */}
+                            <div className="flex flex-wrap justify-center gap-3">
+                                <button 
+                                    onClick={() => setActiveRole('all')}
+                                    className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all border ${activeRole === 'all' ? 'bg-white text-slate-950 border-white shadow-xl shadow-white/5' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'}`}
+                                >
+                                    <i className="fa-solid fa-network-wired mr-2"></i> Show Full Profile
+                                </button>
+                                <button 
+                                    onClick={() => setActiveRole('economist')}
+                                    className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all border ${activeRole === 'economist' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500 shadow-xl shadow-emerald-500/10' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'}`}
+                                >
+                                    <i className="fa-solid fa-chart-line mr-2"></i> The Economist
+                                </button>
+                                <button 
+                                    onClick={() => setActiveRole('accountant')}
+                                    className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all border ${activeRole === 'accountant' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500 shadow-xl shadow-cyan-500/10' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'}`}
+                                >
+                                    <i className="fa-solid fa-calculator mr-2"></i> The Accountant
+                                </button>
+                                
+                                <button 
+                                    onClick={() => setActiveRole('creative')}
+                                    className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all border ${activeRole === 'creative' ? 'bg-rose-500/20 text-rose-300 border-rose-500 shadow-xl shadow-rose-500/10' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'}`}
+                                >
+                                    <i className="fa-solid fa-wand-magic-sparkles mr-2"></i> The Creative Lead
+                                </button>
+                            </div>
+
+                            {/* Dynamically Displayed Focused Path Bio Box */}
+                            <div className="glass-panel rounded-3xl p-8 sm:p-10 border border-white/5 shadow-2xl relative overflow-hidden transition-all duration-500" style={{ backgroundColor: getRoleGlowBg() }}>
+                                <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-gradient-to-tr from-transparent to-white/5 blur-2xl pointer-events-none"></div>
+                                
+                                {activeRole === 'all' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-teal-400 font-mono text-xs font-bold uppercase tracking-wider">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
+                                            <span>Comprehensive Synthesis Profile</span>
+                                        </div>
+                                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white">Combining Analytical Science with Creative Logic</h3>
+                                        <p className="text-slate-300 leading-relaxed text-sm">
+                                            My diverse focus allows me to evaluate macro scenarios with precision. I apply economics theories to societal changes, execute strict accounting standards for reliable data ledger systems, keep communication channels protected through cybersecurity modules, and draft beautiful graphical guides so everyone stays connected.
+                                        </p>
+                                    </div>
+                                )}
+                                {activeRole === 'economist' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                                            <span>Economics Portfolio Mode</span>
+                                        </div>
+                                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white">Using Math, Charts, and Logic to Solve Social Challenges</h3>
+                                        <p className="text-slate-300 leading-relaxed text-sm">
+                                            As an ICCR postgraduate scholar studying Economics at Nalanda University, I design visual representations of public policies, research resource allocations, and study consumer actions. My studies target developmental policies and structural planning modules.
+                                        </p>
+                                    </div>
+                                )}
+                                {activeRole === 'accountant' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                                            <span>Accounting Portfolio Mode</span>
+                                        </div>
+                                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white">Trustworthy Double-Entry Ledger Management</h3>
+                                        <p className="text-slate-300 leading-relaxed text-sm">
+                                            My BBA in Accounting from Rajshahi College established a professional workflow for commercial taxation, cash flow evaluation, and system audits. I specialize in identifying structural errors and designing seamless double-entry sheets.
+                                        </p>
+                                    </div>
+                                )}
+                                {activeRole === 'defender' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-indigo-400 font-mono text-xs font-bold uppercase tracking-wider">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-indigo-400 animate-ping"></span>
+                                            <span>Cyber Security Portfolio Mode</span>
+                                        </div>
+                                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white">Securing Networks and Shielding Essential Assets</h3>
+                                        <p className="text-slate-300 leading-relaxed text-sm">
+                                            I am deeply passionate about digital security. Following BdREN and NORDUnet academic network labs, I study security protocols, cipher operations, policy boundaries, and visual guides to help teams block modern online scams and visual phishing threats.
+                                        </p>
+                                    </div>
+                                )}
+                                {activeRole === 'creative' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-rose-400 font-mono text-xs font-bold uppercase tracking-wider">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping"></span>
+                                            <span>Creative & Media Portfolio Mode</span>
+                                        </div>
+                                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white">Creating Visual Assets & Memorable Media Stories</h3>
+                                        <p className="text-slate-300 leading-relaxed text-sm">
+                                            I connect logical data with striking visual designs. From spearheading the complete brand styling for the Artha Nalanda Fest to designing community highlight films for the Youth Club of Bangladesh, I design visual guides that turn complex data into stories anyone can understand.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+
+                    
+                    
+                    {/* Adaptive Journey / Work Experience Timeline Section */}
+                    <section id="journey" className="py-24 px-6 border-t border-white/5 relative z-10 bg-black/10">
+                        <div className="max-w-4xl mx-auto space-y-12">
+                            
+                            <div className="text-center max-w-2xl mx-auto space-y-3">
+                                <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
+                                    My Journey
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                    Education & Milestone History
+                                </h2>
+                                <p className="text-slate-400 text-sm">
+                                    A clear record of my university studies, leadership achievements, and tech training milestones.
+                                </p>
+                            </div>
+
+                            {/* Vertical Timeline Core Layout */}
+                            <div className="relative border-l-2 border-slate-800 ml-4 md:ml-32 space-y-10">
+                                {filteredTimeline.map((item, idx) => (
+                                    <div key={idx} className="relative group pl-8 md:pl-12">
+                                        
+                                        {/* Year tag side offset for wide viewports */}
+                                        <div className="hidden md:block absolute right-full mr-12 top-0 text-right">
+                                            <span className="font-mono font-bold text-slate-500 text-sm">{item.year}</span>
+                                        </div>
+
+                                        {/* Pulse bubble timeline dot */}
+                                        <div className="absolute left-[-9px] top-1.5 w-4.5 h-4.5 rounded-full bg-slate-900 border-2 border-slate-700 group-hover:border-teal-400 transition-all flex items-center justify-center">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-teal-400 transition-all"></div>
+                                        </div>
+
+                                        {/* Actual Milestone Card */}
+                                        <div className="glass-panel hover:border-slate-700/60 rounded-3xl p-6 sm:p-8 space-y-3 shadow-lg transition-all relative overflow-hidden">
+                                            <div className="md:hidden inline-block text-xs font-mono font-bold text-slate-500 tracking-wider uppercase mb-1">
+                                                {item.year}
+                                            </div>
+                                            <h3 className="text-lg font-bold text-white group-hover:text-teal-400 transition-colors">
+                                                {item.title}
+                                            </h3>
+                                            <span className="text-xs font-semibold bg-white/5 text-slate-300 px-3 py-1 rounded-md border border-white/10 inline-block">
+                                                {item.institution}
+                                            </span>
+                                            <p className="text-xs text-slate-400 leading-relaxed font-light">
+                                                {item.details}
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* Projects & Extra-curriculars Section */}
+                    <section id="projects" className="py-24 px-6 relative z-10">
+                        <div className="max-w-6xl mx-auto space-y-12">
+                            
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                <div className="space-y-4 max-w-xl text-left">
+                                    <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                                        Work Showcase
+                                    </div>
+                                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                        Projects & Extra-Curriculars
+                                    </h2>
+                                    <p className="text-slate-400 text-sm">
+                                        Explore different topics I have worked on, including economic study tools, design work, and community leadership programs.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Grid Layout */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredProjects.map((proj) => (
+                                    <div 
+                                        key={proj.id} 
+                                        className="glass-panel hover:border-indigo-500/30 rounded-3xl p-6 flex flex-col justify-between transition-all group"
+                                    >
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-start">
+                                                <div className="w-10 h-10 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-center text-teal-400 group-hover:text-indigo-400 transition-colors">
+                                                    <i className={`fa-solid ${proj.icon} text-lg`}></i>
+                                                </div>
+                                                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest border border-white/5 px-2 py-0.5 rounded-md">
+                                                    {proj.category}
+                                                </span>
+                                            </div>
+
+                                            <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">
+                                                {proj.title}
+                                            </h3>
+                                            <p className="text-xs text-slate-400 leading-relaxed font-light">
+                                                {proj.details}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-1.5 pt-6 border-t border-white/5 mt-6">
+                                            {proj.tags.map((tag, idx) => (
+                                                <span key={idx} className="text-[9px] font-semibold bg-slate-950 text-slate-400 px-2 py-0.5 rounded-md border border-white/5">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* Creative Works Gallery Section */}
+                    <section id="creative-gallery" className="py-24 px-6 border-t border-white/5 relative z-10 bg-black/10">
+                        <div className="max-w-6xl mx-auto space-y-12">
+                            
+                            <div className="text-center max-w-2xl mx-auto space-y-4">
+                                <div className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 font-bold text-xs uppercase tracking-wider">
+                                    My Creative Studio
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                    Visual Designs, Video & Photography
+                                </h2>
+                                <p className="text-slate-400 text-sm">
+                                    I enjoy combining analytical logic with visual arts. Take a look at some of my graphic designs, video projects, and landscape photography hobby shots.
+                                </p>
+                            </div>
+
+                            {/* Gallery Navigation Tabs */}
+                            <div className="flex flex-wrap items-center justify-center gap-2">
+                                <button 
+                                    onClick={() => setGalleryFilter('all')}
+                                    className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${galleryFilter === 'all' ? 'bg-rose-500/20 border-rose-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}
+                                >
+                                    Show All
+                                </button>
+                                <button 
+                                    onClick={() => setGalleryFilter('graphics')}
+                                    className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${galleryFilter === 'graphics' ? 'bg-rose-500/20 border-rose-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}
+                                >
+                                    <i className="fa-solid fa-palette mr-1.5"></i> Graphic Design
+                                </button>
+                                <button 
+                                    onClick={() => setGalleryFilter('video')}
+                                    className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${galleryFilter === 'video' ? 'bg-rose-500/20 border-rose-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}
+                                >
+                                    <i className="fa-solid fa-film mr-1.5"></i> Video Editing
+                                </button>
+                                <button 
+                                    onClick={() => setGalleryFilter('photography')}
+                                    className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all ${galleryFilter === 'photography' ? 'bg-rose-500/20 border-rose-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}
+                                >
+                                    <i className="fa-solid fa-camera mr-1.5"></i> Photography (Hobby)
+                                </button>
+                            </div>
+
+                            {/* Gallery Grid Items */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredGallery.map((item) => (
+                                    <div 
+                                        key={item.id}
+                                        onClick={() => setLightboxItem(item)}
+                                        className="group relative rounded-3xl overflow-hidden border border-white/5 bg-slate-900/40 cursor-pointer hover:border-rose-500/30 transition-all shadow-lg"
+                                    >
+                                        {/* Image Box */}
+                                        <div className="relative h-56 overflow-hidden bg-black/40">
+                                            <img 
+                                                src={item.image} 
+                                                alt={item.title} 
+                                                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                                                onError={(e) => {
+                                                    e.target.src = "https://placehold.co/600x400/0f1322/e11d48?text=Creative+Work";
+                                                }}
+                                            />
+                                            {/* Category Badge Icon over thumbnail */}
+                                            <div className="absolute top-3 right-3 bg-brand-darkBg/80 border border-white/10 p-2 rounded-xl text-rose-400 text-xs shadow-lg">
+                                                <i className={`fa-solid ${item.icon}`}></i>
+                                            </div>
+
+                                            {/* Hover Click overlay */}
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                                                <div className="w-12 h-12 rounded-full bg-rose-500 flex items-center justify-center text-white text-lg shadow-lg">
+                                                    <i className="fa-solid fa-expand"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Bottom details box */}
+                                        <div className="p-5 space-y-2">
+                                            <span className="text-[10px] font-mono font-bold text-rose-400 uppercase tracking-widest block">
+                                                {item.categoryLabel}
+                                            </span>
+                                            <h3 className="text-base font-extrabold text-white group-hover:text-rose-400 transition-colors">
+                                                {item.title}
+                                            </h3>
+                                            <p className="text-xs text-slate-400 line-clamp-2 font-light">
+                                                {item.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* Lightbox Pop-up Modal */}
+                    {lightboxItem && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+                            <div className="relative bg-[#11131e] border border-white/10 rounded-3xl overflow-hidden max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+                                
+                                {/* Close Button */}
+                                <button 
+                                    onClick={() => setLightboxItem(null)}
+                                    className="absolute top-4 right-4 z-10 w-10 h-10 rounded-xl bg-black/60 border border-white/10 text-white hover:text-rose-400 flex items-center justify-center transition-all shadow-lg text-lg"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+
+                                {/* Main Media Image in modal */}
+                                <div className="relative overflow-hidden bg-black flex-1 min-h-[300px] max-h-[50vh] flex items-center justify-center">
+                                    <img 
+                                        src={lightboxItem.image} 
+                                        alt={lightboxItem.title} 
+                                        className="w-full h-full object-contain"
+                                        onError={(e) => {
+                                            e.target.src = "https://placehold.co/800x600/0f1322/e11d48?text=Creative+Work";
+                                        }}
+                                    />
+                                    {lightboxItem.category === 'video' && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                            <div className="w-16 h-16 rounded-full bg-rose-500 flex items-center justify-center text-white text-2xl animate-pulse shadow-lg cursor-pointer">
+                                                <i className="fa-solid fa-play ml-1"></i>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Modal content text info */}
+                                <div className="p-6 sm:p-8 space-y-3 bg-[#11131e]/95">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="px-2.5 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-bold uppercase rounded-md font-mono tracking-wider">
+                                            <i className={`fa-solid ${lightboxItem.icon} mr-1.5`}></i>
+                                            {lightboxItem.categoryLabel}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                                        {lightboxItem.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-300 leading-relaxed font-light">
+                                        {lightboxItem.description}
+                                    </p>
+                                    <div className="pt-2">
+                                        <button 
+                                            onClick={() => setLightboxItem(null)}
+                                            className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-white/5 text-white text-xs font-bold rounded-xl transition-all"
+                                        >
+                                            Go Back to Gallery
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Contact & Outreach Section */}
+                    <section id="contact" className="py-24 px-6 border-t border-white/5 relative z-10">
+                        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+                            
+                            {/* Left: Contact Details */}
+                            <div className="lg:col-span-5 space-y-6">
+                                <div className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 font-bold text-xs uppercase tracking-wider">
+                                    Contact
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                    Let's Work Together!
+                                </h2>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    I am always looking for exciting academic collaborations, research programs, or visual media roles. Drop me a secure connection note!
+                                </p>
+
+                                <div className="space-y-4 pt-4">
+                                    {/* Coordinate 1 */}
+                                    <div className="flex items-center space-x-3 text-slate-300">
+                                        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400">
+                                            <i className="fa-solid fa-map-pin"></i>
+                                        </div>
+                                        <div className="text-xs">
+                                            <p className="font-bold text-white">Current Location</p>
+                                            <p className="text-slate-400">Rajshahi Division, Bangladesh</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Coordinate 2 */}
+                                    <div onClick={copyEmailToClipboard} className="flex items-center space-x-3 text-slate-300 cursor-pointer group">
+                                        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400 group-hover:bg-rose-500/10 group-hover:text-rose-300 transition-all">
+                                            <i className="fa-solid fa-envelope"></i>
+                                        </div>
+                                        <div className="text-xs">
+                                            <p className="font-bold text-white group-hover:text-rose-400 transition-colors">Primary Email (Click to copy)</p>
+                                            <p className="text-slate-400 font-mono">sreepolash.nus@gmail.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: Connection Input Panel */}
+                            <div className="lg:col-span-7">
+                                <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/5 bg-slate-900/40 relative shadow-2xl">
+                                    
+                                    {contactSubmitted ? (
+                                        <div className="text-center py-12 space-y-4">
+                                            <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-3xl mx-auto animate-bounce">
+                                                <i className="fa-solid fa-envelope-circle-check"></i>
+                                            </div>
+                                            <h3 className="text-xl font-bold text-white">Message Securely Received!</h3>
+                                            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                                                Thanks for connecting. I will review your inquiry details and respond within 24 hours.
+                                            </p>
+                                            <button 
+                                                onClick={() => setContactSubmitted(false)}
+                                                className="text-xs font-bold text-rose-400 underline hover:text-white transition-all"
+                                            >
+                                                Send Another Message
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <form onSubmit={(e) => { e.preventDefault(); setContactSubmitted(true); }} className="space-y-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Name</label>
+                                                    <input 
+                                                        type="text" required placeholder="Guest Name"
+                                                        className="w-full bg-brand-darkBg/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Email</label>
+                                                    <input 
+                                                        type="email" required placeholder="name@domain.com"
+                                                        className="w-full bg-brand-darkBg/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-slate-400 block uppercase">Topic</label>
+                                                <select className="w-full bg-brand-darkBg/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-rose-500/40 transition-all">
+                                                    <option value="research" className="bg-[#11131e] text-white">Economics Research Inquiry</option>
+                                                    <option value="accounting" className="bg-[#11131e] text-white">Auditing & Ledger Collaboration</option>
+                                                    <option value="cyber" className="bg-[#11131e] text-white">Cyber Security & Networks</option>
+                                                    <option value="creative" className="bg-[#11131e] text-white">Graphic & Video Project</option>
+                                                    <option value="general" className="bg-[#11131e] text-white">General Hello</option>
+                                                </select>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Message</label>
+                                                <textarea 
+                                                    rows="4" required placeholder="Type your message details here..."
+                                                    className="w-full bg-brand-darkBg/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
+                                                ></textarea>
+                                            </div>
+
+                                            <button 
+                                                type="submit"
+                                                className="w-full bg-gradient-to-r from-rose-600 to-indigo-600 hover:brightness-110 text-white font-bold text-xs py-3.5 px-6 rounded-xl shadow-lg transition-all"
+                                            >
+                                                Dispatch Secure Connection Payload
+                                            </button>
+                                        </form>
+                                    )}
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* Footer Details */}
+                    <footer className="pt-16 pb-8 text-center text-slate-500 text-[11px] border-t border-white/5 max-w-6xl mx-auto space-y-3">
+                        <div className="flex justify-center space-x-6 text-sm">
+                            <a href="mailto:sreepolash.nus@gmail.com" className="hover:text-rose-400 transition-colors"><i className="fa-regular fa-envelope"></i></a>
+                            <a href="https://linkedin.com" target="_blank" className="hover:text-indigo-400 transition-colors"><i className="fa-brands fa-linkedin"></i></a>
+                            <a href="https://github.com" target="_blank" className="hover:text-teal-400 transition-colors"><i className="fa-brands fa-github"></i></a>
+                        </div>
+                        <p>&copy; 2026 Sree Polash Kumer Sarker. All Rights Reserved.</p>
+                        <p className="font-mono text-[9px] text-slate-600">Built with React, Tailwind CSS, & Security Cipher Protocols.</p>
+                    </footer>
+
+                </div>
+            );
+        }
+
+        // Mount the React Application
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<App />);
+    </script>
+</body>
+</html>
