@@ -3,10 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polash Kumer | Interactive Portfolio</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>Polash Kumer | Polash Kumer Portfolio & CV</title>
+    <meta name="title" content=" Polash Kumer Sarker | Polash Kumer Portfolio & CV">
+    <meta name="description" content="Official portfolio of Sree Polash Kumer Sarker (Polash Kumer). MSc Economics Scholar at Nalanda University, BBA Accounting graduate, researcher, and multimedia designer.">
+    <meta name="keywords" content="Polash, Polash Kumer, Sree Polash Kumer Sarker, Who is Polash, Polash Nalanda University, Polash Rajshahi College, Polash Economics, Polash Portfolio">
+    <meta name="author" content="Sree Polash Kumer Sarker">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://yourdomain.com/">
 
-    <!-- Browser Tab Favicon -->
-    <link rel="icon" type="image/png" href="PKlogo.png">
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="https://yourdomain.com/">
+    <meta property="og:title" content="Sree Polash Kumer Sarker | Polash Kumer Portfolio & CV">
+    <meta property="og:description" content="Discover who Polash Kumer is: MSc Economics Student at Nalanda University, ICCR Scholar, Accounting Specialist, and Content Creator.">
+    <meta property="og:image" content="POLASH2.png">
+    <meta property="profile:first_name" content="Polash">
+    <meta property="profile:last_name" content="Kumer">
+    <meta property="profile:username" content="polash-kumer">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://yourdomain.com/">
+    <meta name="twitter:title" content="Sree Polash Kumer Sarker (Polash Kumer)">
+    <meta name="twitter:description" content="Official portfolio of Polash Kumer: Economics Scholar, Researcher, Graphic Designer & Video Editor.">
+    <meta name="twitter:image" content="POLASH2.png">
+
+    <!-- Structured Data 1: Schema.org Person & ProfilePage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ProfilePage",
+          "@id": "https://yourdomain.com/#webpage",
+          "url": "https://yourdomain.com/",
+          "name": "Polash Kumer Sarker Portfolio",
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://yourdomain.com/#website",
+            "url": "https://yourdomain.com/",
+            "name": "Polash Kumer Official Website"
+          },
+          "about": {
+            "@id": "https://yourdomain.com/#person"
+          },
+          "mainEntity": {
+            "@id": "https://yourdomain.com/#person"
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://yourdomain.com/#person",
+          "name": "Polash Kumer Sarker",
+          "alternateName": [
+            "Polash",
+            "Polash Kumer",
+            "Palash Kumer",
+            "Polash Kumar",
+            "Polash Kumer Sarker"
+          ],
+          "description": "MSc Economics student at Nalanda University (ICCR Scholar), BBA in Accounting from Rajshahi College, data analyst, and creative multimedia designer.",
+          "image": "POLASH2.png",
+          "email": "mailto:palash.kumer.pk@gmail.com",
+          "telephone": "+8801774961395",
+          "jobTitle": "Economics Researcher & Multimedia Specialist",
+          "alumniOf": [
+            {
+              "@type": "CollegeOrUniversity",
+              "name": "Nalanda University"
+            },
+            {
+              "@type": "CollegeOrUniversity",
+              "name": "Rajshahi College"
+            }
+          ],
+          "knowsAbout": [
+            "Economics",
+            "Accounting",
+            "Python Data Analysis",
+            "SPSS",
+            "Video Editing",
+            "Graphic Design"
+          ],
+          "sameAs": [
+            "https://www.linkedin.com/in/polash-kumer",
+            "https://www.youtube.com/watch?v=CzGwLrhASmg"
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data 2: FAQPage for "Who is Polash" Searches -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who is Polash?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Polash (full name Sree Polash Kumer Sarker) is an MSc Economics student at Nalanda University under the ICCR Scholarship, a BBA in Accounting graduate from Rajshahi College, a circular economy research intern at SACIN, and a multimedia creator skilled in data analysis, video editing, and graphic design."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who is Polash Kumer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Polash Kumer is an economics researcher, content creator, and accounting professional specializing in quantitative economics, Python, SPSS, Adobe Premiere Pro, and graphic design."
+          }
+        }
+      ]
+    }
+    </script>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -151,7 +266,7 @@
                 if (cmd === 'help') {
                     response = 'Available Commands: "about", "skills", "experience", "education", "scholarship", "references", "clear"';
                 } else if (cmd === 'about') {
-                    response = 'Sree Polash Kumer Sarker: MSc Economics student at Nalanda University (ICCR Scholar) & BBA in Accounting graduate from Rajshahi College. Expertise in SPSS, Python, Graphic Design, and Video Editing.';
+                    response = 'Polash Kumer Sarker: MSc Economics student at Nalanda University (ICCR Scholar) & BBA in Accounting graduate from Rajshahi College. Expertise in SPSS, Python, Graphic Design, and Video Editing.';
                 } else if (cmd === 'skills') {
                     response = 'Data Analysis: Python (NumPy, SciPy), IBM SPSS, MS Power BI | Accounting: QuickBooks, MS Excel | Design & Video: Photoshop, Canva, Premiere Pro, After Effects, CapCut | Web: HTML, CSS, WordPress.';
                 } else if (cmd === 'experience') {
@@ -192,15 +307,9 @@
                 ]);
             };
 
-            const isInitialMount = useRef(true);
-
-useEffect(() => {
-    if (isInitialMount.current) {
-        isInitialMount.current = false;
-        return;
-    }
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}, [terminalHistory]);
+            useEffect(() => {
+                terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [terminalHistory]);
 
             const timelineEvents = [
                 {
@@ -321,7 +430,7 @@ useEffect(() => {
                     image: "Independence d.png",
                     description: "Independence Day poster for social media."
                 },
-{
+                {
                     id: "g1",
                     title: "Mother Language Day Program Banner",
                     tool: "Adobe Photoshop",
@@ -329,7 +438,6 @@ useEffect(() => {
                     image: "training on ms office excellence 2.0.png",
                     description: "Official event invitation poster and social banner created for Youth Club of Bangladesh."
                 },
-
                 {
                     id: "g2",
                     title: "Announcement",
@@ -354,8 +462,6 @@ useEffect(() => {
                     image: "TCA.jpg",
                     description: "Clean logo design for Transparency Club of Accounting, Rajshahi College."
                 }
-
-
             ]);
 
             const [activeVideoModal, setActiveVideoModal] = useState(null);
@@ -379,10 +485,10 @@ useEffect(() => {
                         <div className="max-w-6xl mx-auto flex items-center justify-between">
                             <a href="#" className="flex items-center space-x-3 group">
                                 <img 
-        src="PKlogo.png" 
-        alt="Logo" 
-        className="w-7 h-7 rounded-xl object-cover shadow-lg" 
-    />
+                                    src="PKlogo.png" 
+                                    alt="Logo" 
+                                    className="w-7 h-7 rounded-xl object-cover shadow-lg" 
+                                />
                                 <span className="font-bold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-400 group-hover:to-rose-400 transition-all">
                                     Polash Kumer
                                 </span>
@@ -414,7 +520,7 @@ useEffect(() => {
                             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
                                 Hi, I am <br/>
                                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-teal-300 to-rose-400">
-                                     Polash Kumer Sarker
+                                    Sree Polash Kumer Sarker
                                 </span>
                             </h1>
 
@@ -461,7 +567,7 @@ useEffect(() => {
                                         }}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex flex-col justify-end p-5 text-center">
-                                        <p className="text-white font-bold text-sm tracking-wide"> Polash Kumer Sarker</p>
+                                        <p className="text-white font-bold text-sm tracking-wide">Sree Polash Kumer Sarker</p>
                                         <p className="text-teal-400 text-[11px]">MA Economics & BBA Accounting</p>
                                         <p className="text-slate-400 text-[10px]">Rajshahi, Bangladesh</p>
                                     </div>
@@ -597,19 +703,6 @@ useEffect(() => {
                         </div>
                     )}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
                     {/* SECTION 2: GRAPHIC DESIGN SHOWCASE */}
                     <section id="graphic-works" className="py-20 px-6 relative z-10">
                         <div className="max-w-6xl mx-auto space-y-10">
@@ -675,11 +768,6 @@ useEffect(() => {
                         </div>
                     </section>
 
-
-
-
-
-
                     {/* GRAPHIC DESIGN LIGHTBOX MODAL */}
                     {activeGraphicModal && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
@@ -715,7 +803,6 @@ useEffect(() => {
                         </div>
                     )}
 
-                    
                     {/* Timeline Section */}
                     <section id="journey" className="py-20 px-6 border-t border-white/5 relative z-10 bg-black/10">
                         <div className="max-w-4xl mx-auto space-y-10">
