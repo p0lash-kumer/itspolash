@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary Meta Tags -->
-    <title>Polash Kumer | Polash Kumer Portfolio & CV</title>
-    <meta name="title" content=" Polash Kumer Sarker | Polash Kumer Portfolio & CV">
-    <meta name="description" content="Official portfolio of Sree Polash Kumer Sarker (Polash Kumer). MSc Economics Scholar at Nalanda University, BBA Accounting graduate, researcher, and multimedia designer.">
-    <meta name="keywords" content="Polash, Polash Kumer, Sree Polash Kumer Sarker, Who is Polash, Polash Nalanda University, Polash Rajshahi College, Polash Economics, Polash Portfolio">
+    <title>Polash Kumer | Portfolio</title>
+    <meta name="title" content="Polash Kumer Sarker | Portfolio">
+    <meta name="description" content="Official portfolio of Sree Polash Kumer Sarker (Polash Kumer). MA Economics Scholar at Nalanda University, BBA Accounting graduate, researcher, and multimedia designer.">
+    <meta name="keywords" content="Polash, Polash Kumer,Polash Rajshahi, its Polash, Sree Polash Kumer Sarker, Who is Polash, Polash Nalanda University, Polash Rajshahi College, Polash Economics, Polash Portfolio">
     <meta name="author" content="Polash Kumer Sarker">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://yourdomain.com/">
@@ -19,8 +19,8 @@
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="profile">
     <meta property="og:url" content="https://yourdomain.com/">
-    <meta property="og:title" content="Polash Kumer Sarker | Polash Kumer Portfolio & CV">
-    <meta property="og:description" content="Discover who Polash Kumer is: MSc Economics Student at Nalanda University, ICCR Scholar, Accounting Specialist, and Content Creator.">
+    <meta property="og:title" content="Polash Kumer Sarker | Portfolio">
+    <meta property="og:description" content="Discover who Polash Kumer is: MA Economics Student at Nalanda University, ICCR Scholar, Accounting Specialist, and Content Creator.">
     <meta property="og:image" content="POLASH2.png">
     <meta property="profile:first_name" content="Polash">
     <meta property="profile:last_name" content="Kumer">
@@ -67,7 +67,7 @@
             "Polash Kumar",
             "Polash Kumer Sarker"
           ],
-          "description": "MSc Economics student at Nalanda University (ICCR Scholar), BBA in Accounting from Rajshahi College, data analyst, and creative multimedia designer.",
+          "description": "MA Economics student at Nalanda University (ICCR Scholar), BBA in Accounting from Rajshahi College, and creative multimedia designer.",
           "image": "POLASH2.png",
           "email": "mailto:palash.kumer.pk@gmail.com",
           "telephone": "+8801774961395",
@@ -110,7 +110,7 @@
           "name": "Who is Polash?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Polash (full name Sree Polash Kumer Sarker) is an MSc Economics student at Nalanda University under the ICCR Scholarship, a BBA in Accounting graduate from Rajshahi College, a circular economy research intern at SACIN, and a multimedia creator skilled in data analysis, video editing, and graphic design."
+            "text": "Polash (full name Sree Polash Kumer Sarker) is an MA Economics student at Nalanda University under the ICCR Scholarship, a BBA in Accounting graduate from Rajshahi College, a circular economy research intern at SACIN, and a multimedia creator skilled in data analysis, video editing, and graphic design."
           }
         },
         {
@@ -151,9 +151,25 @@
             overflow-x: hidden;
         }
 
+        /* LetterGlitch Component CSS */
+        .letter-glitch {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .letter-glitch-canvas {
+            position: absolute;
+            inset: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
         /* Glassmorphic Panel styling */
         .glass-panel {
-            background: rgba(18, 22, 36, 0.7);
+            background: rgba(18, 22, 36, 0.72);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -179,20 +195,1057 @@
             scroll-behavior: smooth;
         }
 
-        .bg-grid-pattern {
-            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-            background-size: 24px 24px;
+        .perspective-container {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+
+        /* Scroll Appear Animations */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(28px) scale(0.98);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-item.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
     </style>
 </head>
-<body class="bg-[#0b0d14] text-slate-100 antialiased bg-grid-pattern min-h-screen">
+<body class="bg-[#0b0d14] text-slate-100 antialiased min-h-screen">
 
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // Typewriter Effect Helper Component
+        // --- LetterGlitch Component Source ---
+        const DEFAULT_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789';
+        const DEFAULT_FONT = "ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Liberation Mono', monospace";
+        const DARK_COLORS = ['#818cf8', '#5eead4', '#fb7185'];
+        const LIGHT_COLORS = ['#18181b', '#0f9f6e'];
+        const MAX_COLORS = 8;
+        const INTRO_SECONDS = 1.4;
+        const REST_RATE = 0.2;
+        const GLITCH_RATE = 0.1;
+        const MAX_WALKERS = 48;
+
+        const VERTEX = `#version 300 es
+void main() {
+  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+}`;
+
+        const FRAGMENT = `#version 300 es
+precision highp float;
+precision highp int;
+uniform sampler2D uAtlas;
+uniform sampler2D uState;
+uniform ivec2 uCell;
+uniform ivec2 uGrid;
+uniform int uAtlasColumns;
+uniform vec2 uResolution;
+uniform vec2 uOrigin;
+uniform vec3 uBase;
+uniform float uBaseOpacity;
+uniform vec3 uColors[8];
+uniform float uEdge;
+uniform float uCenter;
+uniform vec2 uPointer;
+uniform float uRadius;
+uniform float uPresence;
+uniform float uReveal;
+uniform float uTime;
+uniform float uFlow;
+uniform float uFlowScale;
+uniform vec4 uBackground;
+out vec4 outColor;
+
+float hash(vec2 p) {
+  vec3 q = fract(vec3(p.xyx) * 0.1031);
+  q += dot(q, q.yzx + 33.33);
+  return fract((q.x + q.y) * q.z);
+}
+
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 w = f * f * (3.0 - 2.0 * f);
+  float a = hash(i);
+  float b = hash(i + vec2(1.0, 0.0));
+  float c = hash(i + vec2(0.0, 1.0));
+  float d = hash(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, w.x), mix(c, d, w.x), w.y);
+}
+
+float smoother(float x) {
+  x = clamp(x, 0.0, 1.0);
+  return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
+}
+
+void main() {
+  vec2 frag = vec2(gl_FragCoord.x, uResolution.y - gl_FragCoord.y) - uOrigin;
+  ivec2 q = ivec2(floor(frag));
+  ivec2 cell = q / uCell;
+  vec4 color = vec4(0.0);
+  if (all(greaterThanEqual(q, ivec2(0))) && all(lessThan(cell, uGrid))) {
+    vec4 state = texelFetch(uState, cell, 0);
+    int glyph = int(state.r * 255.0 + 0.5);
+    ivec2 texel = ivec2(glyph % uAtlasColumns, glyph / uAtlasColumns) * uCell + (q - cell * uCell);
+    float coverage = texelFetch(uAtlas, texel, 0).a;
+    if (coverage > 0.0) {
+      vec2 center = vec2(cell * uCell) + vec2(uCell) * 0.5 + uOrigin;
+      float mask = 1.0;
+      if (uEdge > 0.0) {
+        vec2 edge = min(center, uResolution - center) / uEdge;
+        mask = smoother(edge.x) * smoother(edge.y);
+      }
+      if (uCenter > 0.0) {
+        vec2 room = max(abs(center - uResolution * 0.5) - uResolution * vec2(0.3, 0.24), 0.0);
+        float soft = min(uResolution.x, uResolution.y) * 0.24;
+        mask *= 1.0 - uCenter * (1.0 - smoother(length(room) / soft));
+      }
+      float seed = hash(vec2(cell) + 17.0);
+      float rest = state.g * uBaseOpacity * (0.8 + 0.2 * sin(uTime * (0.5 + 1.2 * seed) + seed * 40.0));
+      if (uFlow > 0.0) {
+        vec2 p = center / uFlowScale;
+        float n = 0.65 * noise(p + vec2(uTime * 0.05, uTime * 0.03)) + 0.35 * noise(p * 2.03 - vec2(uTime * 0.04, -uTime * 0.06));
+        rest *= mix(1.0, 0.1 + 1.7 * smoothstep(0.25, 0.8, n), uFlow);
+      }
+      if (uPresence > 0.0) {
+        float d = length(center - uPointer) / uRadius;
+        float f = clamp(1.0 - d * d, 0.0, 1.0);
+        rest = mix(rest, max(rest, uReveal * step(0.004, state.g)), f * f * uPresence);
+      }
+      float heat = state.b;
+      rest = min(rest, 1.0) * (1.0 - heat);
+      vec3 tint = uColors[int(state.a * 255.0 + 0.5)];
+      float weight = coverage * mask;
+      color = vec4((uBase * rest + tint * heat) * weight, (rest + heat) * weight);
+    }
+  }
+  outColor = color + uBackground * (1.0 - color.a);
+}`;
+
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const smoother = value => {
+          const x = clamp(value, 0, 1);
+          return x * x * x * (x * (x * 6 - 15) + 10);
+        };
+
+        const compile = (gl, type, source) => {
+          const shader = gl.createShader(type);
+          if (!shader) return null;
+          gl.shaderSource(shader, source);
+          gl.compileShader(shader);
+          if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
+          gl.deleteShader(shader);
+          return null;
+        };
+
+        const link = gl => {
+          const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
+          const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
+          const program = gl.createProgram();
+          if (!vertex || !fragment || !program) return null;
+          gl.attachShader(program, vertex);
+          gl.attachShader(program, fragment);
+          gl.linkProgram(program);
+          gl.deleteShader(vertex);
+          gl.deleteShader(fragment);
+          if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            gl.deleteProgram(program);
+            return null;
+          }
+          const uniforms = {};
+          const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+          for (let i = 0; i < count; i++) {
+            const info = gl.getActiveUniform(program, i);
+            if (!info) continue;
+            const name = info.name.replace(/\[0\]$/, '');
+            uniforms[name] = gl.getUniformLocation(program, name);
+          }
+          return { program, uniforms };
+        };
+
+        const LetterGlitch = ({
+          glitchColors,
+          baseColor,
+          characters = DEFAULT_CHARACTERS,
+          fontFamily = DEFAULT_FONT,
+          fontSize = 14,
+          spacing = 0.6,
+          density = 0.9,
+          baseOpacity = 0.16,
+          glitchAmount = 0.5,
+          speed = 1,
+          smooth = true,
+          interactive = true,
+          cursorRadius = 140,
+          clickEffect = 'tear',
+          flow = 0.5,
+          edgeFade = 0,
+          centerFade = 0,
+          intro = true,
+          lightMode = false,
+          backgroundColor,
+          dpr,
+          className = '',
+          style,
+          ...rest
+        }) => {
+          const containerRef = useRef(null);
+          const canvasRef = useRef(null);
+          const wakeRef = useRef(null);
+          const customColors = Array.isArray(glitchColors) && glitchColors.length ? glitchColors : null;
+          const settings = {
+            colors: (customColors || (lightMode ? LIGHT_COLORS : DARK_COLORS)).slice(0, MAX_COLORS),
+            baseColor: baseColor || (lightMode ? '#18181b' : '#ffffff'),
+            characters: characters || DEFAULT_CHARACTERS,
+            fontFamily: fontFamily || DEFAULT_FONT,
+            fontSize: clamp(fontSize, 6, 96),
+            spacing: clamp(spacing, 0, 2),
+            density: clamp(density, 0, 1),
+            baseOpacity: clamp(baseOpacity, 0, 1),
+            glitchAmount: clamp(glitchAmount, 0, 1),
+            speed: Math.max(0, speed),
+            smooth,
+            interactive,
+            cursorRadius: Math.max(0, cursorRadius),
+            clickEffect,
+            flow: clamp(flow, 0, 1),
+            edgeFade: clamp(edgeFade, 0, 0.5),
+            centerFade: clamp(centerFade, 0, 1),
+            intro,
+            backgroundColor,
+            dpr
+          };
+          const settingsRef = useRef(settings);
+          settingsRef.current = settings;
+
+          useEffect(() => {
+            const container = containerRef.current;
+            const canvas = canvasRef.current;
+            const gl = canvas?.getContext('webgl2', {
+              alpha: true,
+              premultipliedAlpha: true,
+              antialias: false,
+              depth: false,
+              stencil: false
+            });
+            if (!container || !canvas || !gl) return undefined;
+
+            const program = link(gl);
+            if (!program) return undefined;
+            const u = program.uniforms;
+            const vao = gl.createVertexArray();
+            const makeTexture = () => {
+              const texture = gl.createTexture();
+              gl.bindTexture(gl.TEXTURE_2D, texture);
+              gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+              gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+              gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+              gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+              return texture;
+            };
+            const atlasTexture = makeTexture();
+            const stateTexture = makeTexture();
+            const maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+            const atlas = document.createElement('canvas');
+            const atlasContext = atlas.getContext('2d');
+            const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+            if (!atlasContext) return undefined;
+
+            const colorCache = new Map();
+            const parse = value => {
+              const key = String(value);
+              const cached = colorCache.get(key);
+              if (cached) return cached;
+              let rgb = [1, 1, 1];
+              if (probe) {
+                probe.clearRect(0, 0, 1, 1);
+                probe.fillStyle = '#ffffff';
+                probe.fillStyle = key;
+                probe.fillRect(0, 0, 1, 1);
+                const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
+                rgb = [r / 255, g / 255, b / 255];
+              }
+              colorCache.set(key, rgb);
+              return rgb;
+            };
+
+            const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+            const view = { width: 1, height: 1, ratio: 1 };
+            const grid = { cols: 0, rows: 0, cellW: 0, cellH: 0, originX: 0, originY: 0, atlasColumns: 1 };
+            const pointer = { x: 0, y: 0, sx: 0, sy: 0, inside: false, presence: 0, stir: 0, fresh: true };
+            const walkers = [];
+            const palette = new Float32Array(MAX_COLORS * 3);
+            const loadedFonts = new Set();
+            let pool = [0];
+            let typeKey = '';
+            let paletteKey = '';
+            let colorCount = 1;
+            let count = 0;
+            let data = new Uint8Array(0);
+            let heat = new Float32Array(0);
+            let peak = new Float32Array(0);
+            let hold = new Float32Array(0);
+            let fade = new Float32Array(0);
+            let wait = new Float32Array(0);
+            let delay = new Float32Array(0);
+            let luck = new Float32Array(0);
+            let level = new Float32Array(0);
+            let born = new Float32Array(0);
+            let slot = new Int32Array(0);
+            let active = new Int32Array(0);
+            let activeCount = 0;
+            let introLeft = settingsRef.current.intro && !reduce;
+            let clock = 0;
+            let time = 0;
+            let density = -1;
+            let restCarry = 0;
+            let glitchCarry = 0;
+            let cursorCarry = 0;
+            let dirty = true;
+            let raf = 0;
+            let last = 0;
+            let visible = true;
+            let alive = true;
+
+            const randomGlyph = () => pool[(Math.random() * pool.length) | 0];
+            const randomColor = () => (Math.random() * colorCount) | 0;
+
+            const restValue = (i, appear = 1) =>
+              luck[i] < settingsRef.current.density ? Math.round(level[i] * 255 * appear) : 0;
+
+            const cellAt = (x, y) => {
+              const c = Math.floor((x - grid.originX) / grid.cellW);
+              const r = Math.floor((y - grid.originY) / grid.cellH);
+              if (c < 0 || r < 0 || c >= grid.cols || r >= grid.rows) return -1;
+              return r * grid.cols + c;
+            };
+
+            const ignite = (i, strength, holdTime, fadeTime, color, after = 0) => {
+              if (slot[i] < 0) {
+                slot[i] = activeCount;
+                active[activeCount++] = i;
+                heat[i] = 0;
+                hold[i] = holdTime;
+                peak[i] = strength;
+                fade[i] = fadeTime;
+                wait[i] = 0;
+                delay[i] = after;
+                data[i * 4 + 3] = color;
+                return;
+              }
+              if (heat[i] < 0.15) data[i * 4 + 3] = color;
+              peak[i] = hold[i] > 0 ? Math.max(peak[i], strength) : strength;
+              hold[i] = Math.max(hold[i], holdTime);
+              fade[i] = Math.max(fade[i], fadeTime);
+              delay[i] = Math.min(delay[i], after);
+            };
+
+            const release = k => {
+              const i = active[k];
+              const moved = active[--activeCount];
+              active[k] = moved;
+              slot[moved] = k;
+              slot[i] = -1;
+              heat[i] = 0;
+              data[i * 4 + 2] = 0;
+            };
+
+            const buildType = () => {
+              const s = settingsRef.current;
+              const size = s.fontSize * view.ratio;
+              const font = `${size}px ${s.fontFamily}`;
+              const chars = Array.from(s.characters);
+              const unique = Array.from(new Set(chars)).slice(0, 256);
+              atlasContext.font = font;
+              let advance = 1;
+              unique.forEach(char => {
+                advance = Math.max(advance, atlasContext.measureText(char).width);
+              });
+              const metrics = atlasContext.measureText('M');
+              const cellW = Math.max(2, Math.ceil(advance + size * s.spacing));
+              const cellH = Math.max(2, Math.ceil(size * (0.95 + s.spacing)));
+              const columns = Math.max(1, Math.min(unique.length, Math.floor(maxSize / cellW)));
+              atlas.width = columns * cellW;
+              atlas.height = Math.ceil(unique.length / columns) * cellH;
+              atlasContext.font = font;
+              atlasContext.textAlign = 'center';
+              atlasContext.textBaseline = 'alphabetic';
+              atlasContext.fillStyle = '#ffffff';
+              const baseline = cellH / 2 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
+              unique.forEach((char, i) => {
+                atlasContext.fillText(char, (i % columns) * cellW + cellW / 2, Math.floor(i / columns) * cellH + baseline);
+              });
+              gl.bindTexture(gl.TEXTURE_2D, atlasTexture);
+              gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas);
+              const lookup = new Map(unique.map((char, i) => [char, i]));
+              const nextPool = chars.map(char => lookup.get(char)).filter(index => index !== undefined);
+              const charsChanged = nextPool.length !== pool.length || nextPool.some((index, i) => index !== pool[i]);
+              pool = nextPool.length ? nextPool : [0];
+              const resized = cellW !== grid.cellW || cellH !== grid.cellH;
+              grid.cellW = cellW;
+              grid.cellH = cellH;
+              grid.atlasColumns = columns;
+              if (!loadedFonts.has(font) && document.fonts?.load) {
+                loadedFonts.add(font);
+                document.fonts
+                  .load(font, s.characters)
+                  .then(() => {
+                    if (!alive) return;
+                    typeKey = '';
+                    wake();
+                  })
+                  .catch(() => {});
+              }
+              return { resized, charsChanged };
+            };
+
+            const birthTime = (c, r, cols, rows) => {
+              const dx = (c + 0.5) / cols - 0.5;
+              const dy = (r + 0.5) / rows - 0.5;
+              const radial = Math.min(1, Math.hypot(dx, dy * 0.8) * 1.6);
+              return INTRO_SECONDS * (0.3 * radial + 0.7 * Math.random() ** 1.3);
+            };
+
+            const buildGrid = () => {
+              const cols = Math.ceil(canvas.width / grid.cellW) + 1;
+              const rows = Math.ceil(canvas.height / grid.cellH) + 1;
+              grid.originX = Math.floor((canvas.width - cols * grid.cellW) / 2);
+              grid.originY = Math.floor((canvas.height - rows * grid.cellH) / 2);
+              if (cols === grid.cols && rows === grid.rows) return;
+              const n = cols * rows;
+              const nextData = new Uint8Array(n * 4);
+              const nextLuck = new Float32Array(n);
+              const nextLevel = new Float32Array(n);
+              const nextBorn = new Float32Array(n);
+              const shiftC = Math.floor((grid.cols - cols) / 2);
+              const shiftR = Math.floor((grid.rows - rows) / 2);
+              for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                  const i = r * cols + c;
+                  const oc = c + shiftC;
+                  const or = r + shiftR;
+                  if (oc >= 0 && or >= 0 && oc < grid.cols && or < grid.rows) {
+                    const j = or * grid.cols + oc;
+                    nextData[i * 4] = data[j * 4];
+                    nextData[i * 4 + 1] = data[j * 4 + 1];
+                    nextLuck[i] = luck[j];
+                    nextLevel[i] = level[j];
+                    nextBorn[i] = born[j];
+                  } else {
+                    nextData[i * 4] = randomGlyph();
+                    nextLuck[i] = Math.random();
+                    nextLevel[i] = 0.55 + 0.45 * Math.random();
+                    nextBorn[i] = introLeft ? birthTime(c, r, cols, rows) : -1;
+                  }
+                }
+              }
+              grid.cols = cols;
+              grid.rows = rows;
+              count = n;
+              data = nextData;
+              luck = nextLuck;
+              level = nextLevel;
+              born = nextBorn;
+              heat = new Float32Array(n);
+              peak = new Float32Array(n);
+              hold = new Float32Array(n);
+              fade = new Float32Array(n);
+              wait = new Float32Array(n);
+              delay = new Float32Array(n);
+              slot = new Int32Array(n).fill(-1);
+              active = new Int32Array(n);
+              activeCount = 0;
+              walkers.length = 0;
+              for (let i = 0; i < n; i++) data[i * 4 + 1] = born[i] >= 0 ? 0 : restValue(i);
+              density = settingsRef.current.density;
+              gl.bindTexture(gl.TEXTURE_2D, stateTexture);
+              gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, cols, rows, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+              dirty = false;
+            };
+
+            const syncType = () => {
+              const s = settingsRef.current;
+              const key = `${s.fontSize * view.ratio}|${s.fontFamily}|${s.spacing}|${s.characters}`;
+              if (key === typeKey) return;
+              typeKey = key;
+              const { resized, charsChanged } = buildType();
+              if (resized || !grid.cols) buildGrid();
+              if (charsChanged) {
+                for (let i = 0; i < count; i++) data[i * 4] = randomGlyph();
+                dirty = true;
+              }
+            };
+
+            const syncPalette = () => {
+              const s = settingsRef.current;
+              const key = s.colors.join(',');
+              if (key === paletteKey) return;
+              paletteKey = key;
+              colorCount = Math.max(1, s.colors.length);
+              for (let i = 0; i < MAX_COLORS; i++) {
+                const rgb = parse(s.colors[Math.min(i, colorCount - 1)] ?? '#ffffff');
+                palette[i * 3] = rgb[0];
+                palette[i * 3 + 1] = rgb[1];
+                palette[i * 3 + 2] = rgb[2];
+              }
+              for (let i = 0; i < count; i++) {
+                if (data[i * 4 + 3] >= colorCount) data[i * 4 + 3] = randomColor();
+              }
+              dirty = true;
+            };
+
+            const addWalker = walker => {
+              if (walkers.length < MAX_WALKERS) walkers.push({ carry: 0, after: 0, wiggle: 0, branch: 0, ...walker });
+            };
+
+            const spawnTear = (x, y) => {
+              const center = cellAt(x, y);
+              if (center < 0) return;
+              const r0 = Math.floor(center / grid.cols);
+              const width = grid.cols * grid.cellW;
+              for (let dr = -2; dr <= 2; dr++) {
+                const r = r0 + dr;
+                if (r < 0 || r >= grid.rows) continue;
+                const weight = 1 - Math.abs(dr) / 3;
+                if (dr !== 0 && Math.random() > 0.3 + 0.6 * weight) continue;
+                const color = randomColor();
+                const rowY = grid.originY + (r + 0.5) * grid.cellH;
+                const shift = (Math.random() - 0.5) * 6 * grid.cellW * (1 - weight);
+                [0, Math.PI].forEach(angle => {
+                  const life = width * (0.12 + 0.5 * weight * (0.4 + 0.6 * Math.random()));
+                  addWalker({
+                    x: x + shift,
+                    y: rowY,
+                    angle,
+                    life,
+                    span: life,
+                    speed: (2200 + Math.random() * 1200) * view.ratio,
+                    after: Math.abs(dr) * 0.035 + Math.random() * 0.03,
+                    color
+                  });
+                });
+              }
+            };
+
+            const spawnRays = (x, y) => {
+              const reach = Math.min(view.width, view.height) * view.ratio;
+              const rays = 5 + ((Math.random() * 3) | 0);
+              const turn = Math.random() * Math.PI * 2;
+              for (let k = 0; k < rays; k++) {
+                const life = reach * (0.25 + Math.random() * 0.3);
+                addWalker({
+                  x,
+                  y,
+                  angle: turn + (k / rays) * Math.PI * 2 + (Math.random() - 0.5) * 0.4,
+                  life,
+                  span: life,
+                  speed: (700 + Math.random() * 400) * view.ratio,
+                  wiggle: 0.2,
+                  branch: 0.03,
+                  color: randomColor()
+                });
+              }
+            };
+
+            const spawnBurst = (x, y) => {
+              const center = cellAt(x, y);
+              if (center < 0) return;
+              ignite(center, 1, 0.08, 0.8, randomColor());
+              if (settingsRef.current.clickEffect === 'burst') spawnRays(x, y);
+              else spawnTear(x, y);
+            };
+
+            const stepWalkers = dt => {
+              for (let k = walkers.length - 1; k >= 0; k--) {
+                const w = walkers[k];
+                if (w.after > 0) {
+                  w.after -= dt;
+                  continue;
+                }
+                const step = Math.max(
+                  1,
+                  Math.abs(Math.cos(w.angle)) * grid.cellW + Math.abs(Math.sin(w.angle)) * grid.cellH * 0.6
+                );
+                w.carry += w.speed * dt;
+                while (w.carry >= step && w.life > 0) {
+                  w.carry -= step;
+                  w.life -= step;
+                  w.angle += (Math.random() - 0.5) * w.wiggle;
+                  w.x += Math.cos(w.angle) * step;
+                  w.y += Math.sin(w.angle) * step;
+                  const i = cellAt(w.x, w.y);
+                  if (i < 0) {
+                    w.life = 0;
+                    break;
+                  }
+                  const left = w.life / w.span;
+                  ignite(i, 0.5 + 0.5 * left, 0.03 + Math.random() * 0.05, 0.5 + 0.5 * left, w.color);
+                  if (w.branch && Math.random() < w.branch) {
+                    const side = Math.random() < 0.5 ? -1 : 1;
+                    const life = w.life * (0.45 + Math.random() * 0.3);
+                    addWalker({
+                      x: w.x,
+                      y: w.y,
+                      angle: w.angle + side * (0.5 + Math.random() * 0.5),
+                      life,
+                      span: w.span,
+                      speed: w.speed,
+                      wiggle: w.wiggle,
+                      color: w.color
+                    });
+                  }
+                }
+                if (w.life <= 0) walkers.splice(k, 1);
+              }
+            };
+
+            const ambient = dt => {
+              const s = settingsRef.current;
+              if (reduce || s.speed <= 0 || !count) return;
+              restCarry += count * REST_RATE * s.speed * dt;
+              let changes = Math.min(count, restCarry | 0);
+              restCarry -= changes;
+              while (changes-- > 0) {
+                const i = (Math.random() * count) | 0;
+                if (slot[i] < 0) {
+                  data[i * 4] = randomGlyph();
+                  dirty = true;
+                }
+              }
+              const tempo = Math.max(s.speed, 0.2);
+              glitchCarry += count * s.glitchAmount ** 1.6 * GLITCH_RATE * s.speed * dt;
+              let events = Math.min(count, glitchCarry | 0);
+              glitchCarry -= events;
+              while (events-- > 0) {
+                const i = (Math.random() * count) | 0;
+                const color = randomColor();
+                const strength = 0.45 + 0.55 * Math.random();
+                const holdTime = (0.04 + Math.random() * 0.26) / tempo;
+                const fadeTime = (0.45 + Math.random() * 0.6) / tempo;
+                const roll = Math.random();
+                if (roll < 0.24) {
+                  const c = i % grid.cols;
+                  const long = roll < 0.015;
+                  const length = Math.min(
+                    grid.cols - c,
+                    long ? 10 + ((Math.random() * 24) | 0) : 2 + ((Math.random() * 7) | 0)
+                  );
+                  const pace = (long ? 0.012 : 0.028) / tempo;
+                  for (let k = 0; k < length; k++) ignite(i + k, strength, holdTime, fadeTime, color, k * pace);
+                } else {
+                  ignite(i, strength, holdTime, fadeTime, color);
+                }
+              }
+            };
+
+            const excite = dt => {
+              const s = settingsRef.current;
+              if (pointer.presence < 0.02 || reduce || !count) return;
+              const radius = s.cursorRadius * view.ratio;
+              if (radius < 1) return;
+              const c0 = Math.max(0, Math.floor((pointer.sx - radius - grid.originX) / grid.cellW));
+              const c1 = Math.min(grid.cols - 1, Math.floor((pointer.sx + radius - grid.originX) / grid.cellW));
+              const r0 = Math.max(0, Math.floor((pointer.sy - radius - grid.originY) / grid.cellH));
+              const r1 = Math.min(grid.rows - 1, Math.floor((pointer.sy + radius - grid.originY) / grid.cellH));
+              const chance = pointer.presence * (3 + 9 * pointer.stir) * dt;
+              for (let r = r0; r <= r1; r++) {
+                const dy = (grid.originY + (r + 0.5) * grid.cellH - pointer.sy) / radius;
+                for (let c = c0; c <= c1; c++) {
+                  const dx = (grid.originX + (c + 0.5) * grid.cellW - pointer.sx) / radius;
+                  const d = dx * dx + dy * dy;
+                  if (d >= 1) continue;
+                  const i = r * grid.cols + c;
+                  if (slot[i] < 0 && Math.random() < (1 - d) * (1 - d) * chance) {
+                    data[i * 4] = randomGlyph();
+                    dirty = true;
+                  }
+                }
+              }
+              const cells = (Math.PI * radius * radius) / (grid.cellW * grid.cellH);
+              cursorCarry += cells * pointer.presence * (0.15 + 4 * pointer.stir) * dt;
+              let sparks = Math.min(512, cursorCarry | 0);
+              cursorCarry -= sparks;
+              while (sparks-- > 0) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.sqrt(Math.random());
+                const falloff = (1 - distance * distance) ** 2;
+                if (Math.random() > falloff) continue;
+                const i = cellAt(
+                  pointer.sx + Math.cos(angle) * distance * radius,
+                  pointer.sy + Math.sin(angle) * distance * radius
+                );
+                if (i < 0) continue;
+                ignite(
+                  i,
+                  (0.3 + 0.7 * Math.random()) * (0.45 + 0.55 * pointer.stir),
+                  0.02 + Math.random() * 0.08,
+                  0.35 + Math.random() * 0.4,
+                  randomColor()
+                );
+              }
+            };
+
+            const settle = dt => {
+              const s = settingsRef.current;
+              const tempo = Math.max(s.speed, 0.5);
+              const attack = 1 - Math.exp(-dt / 0.05);
+              for (let k = 0; k < activeCount; ) {
+                const i = active[k];
+                if (delay[i] > 0) {
+                  delay[i] -= dt;
+                  k++;
+                  continue;
+                }
+                let h = heat[i];
+                if (hold[i] > 0) {
+                  hold[i] -= dt;
+                  h = s.smooth ? h + (peak[i] - h) * attack : peak[i];
+                } else {
+                  h = s.smooth ? h * Math.exp((-dt * 4) / Math.max(fade[i], 0.05)) : 0;
+                }
+                if (h < 0.012 && hold[i] <= 0) {
+                  release(k);
+                  dirty = true;
+                  continue;
+                }
+                heat[i] = h;
+                wait[i] -= dt;
+                if (wait[i] <= 0) {
+                  data[i * 4] = randomGlyph();
+                  wait[i] = ((0.045 + 0.45 * (1 - h) * (1 - h)) * (0.6 + 0.8 * Math.random())) / tempo;
+                }
+                data[i * 4 + 2] = Math.round(h * 255);
+                dirty = true;
+                k++;
+              }
+            };
+
+            const reveal = dt => {
+              if (!introLeft) return;
+              const s = settingsRef.current;
+              let pending = false;
+              for (let i = 0; i < count; i++) {
+                const t = born[i];
+                if (t < 0) continue;
+                const age = clock - t;
+                if (age < 0) {
+                  pending = true;
+                  continue;
+                }
+                if (age < dt && Math.random() < (luck[i] < s.density ? 0.45 : 0.12)) {
+                  ignite(i, 0.4 + 0.5 * Math.random(), 0.02, 0.35 + Math.random() * 0.35, randomColor());
+                }
+                const appear = s.smooth ? smoother(age / 0.35) : 1;
+                data[i * 4 + 1] = restValue(i, appear);
+                if (appear >= 1) born[i] = -1;
+                else pending = true;
+              }
+              dirty = true;
+              if (!pending) introLeft = false;
+            };
+
+            const frame = now => {
+              raf = 0;
+              if (resizePending) {
+                resizePending = false;
+                applyResize();
+              }
+              if (!visible || document.hidden) return;
+              const s = settingsRef.current;
+              const dt = last ? clamp((now - last) / 1000, 0.0005, 0.05) : 1 / 60;
+              last = now;
+              clock += dt;
+              if (!reduce) time += dt * s.speed;
+              syncType();
+              syncPalette();
+              if (s.density !== density) {
+                density = s.density;
+                for (let i = 0; i < count; i++) if (born[i] < 0) data[i * 4 + 1] = restValue(i);
+                dirty = true;
+              }
+              const goal = s.interactive && pointer.inside && !reduce ? 1 : 0;
+              pointer.presence += (goal - pointer.presence) * (1 - Math.exp(-dt / 0.25));
+              if (Math.abs(goal - pointer.presence) < 0.002) pointer.presence = goal;
+              const px = pointer.sx;
+              const py = pointer.sy;
+              const follow = 1 - Math.exp(-dt / 0.07);
+              pointer.sx += (pointer.x - pointer.sx) * follow;
+              pointer.sy += (pointer.y - pointer.sy) * follow;
+              const moved = Math.hypot(pointer.sx - px, pointer.sy - py) / view.ratio / dt;
+              pointer.stir += (clamp(moved / 1400, 0, 1) - pointer.stir) * (1 - Math.exp(-dt / 0.12));
+              if (pointer.stir < 0.001) pointer.stir = 0;
+              reveal(dt);
+              ambient(dt);
+              excite(dt);
+              stepWalkers(dt);
+              settle(dt);
+
+              gl.viewport(0, 0, canvas.width, canvas.height);
+              gl.disable(gl.BLEND);
+              gl.useProgram(program.program);
+              gl.bindVertexArray(vao);
+              gl.activeTexture(gl.TEXTURE1);
+              gl.bindTexture(gl.TEXTURE_2D, stateTexture);
+              if (dirty) {
+                gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, grid.cols, grid.rows, gl.RGBA, gl.UNSIGNED_BYTE, data);
+                dirty = false;
+              }
+              gl.uniform1i(u.uState, 1);
+              gl.activeTexture(gl.TEXTURE0);
+              gl.bindTexture(gl.TEXTURE_2D, atlasTexture);
+              gl.uniform1i(u.uAtlas, 0);
+              gl.uniform2i(u.uCell, grid.cellW, grid.cellH);
+              gl.uniform2i(u.uGrid, grid.cols, grid.rows);
+              gl.uniform1i(u.uAtlasColumns, grid.atlasColumns);
+              gl.uniform2f(u.uResolution, canvas.width, canvas.height);
+              gl.uniform2f(u.uOrigin, grid.originX, grid.originY);
+              gl.uniform3fv(u.uBase, parse(s.baseColor));
+              gl.uniform1f(u.uBaseOpacity, s.baseOpacity);
+              gl.uniform3fv(u.uColors, palette);
+              gl.uniform1f(u.uEdge, s.edgeFade * Math.min(canvas.width, canvas.height));
+              gl.uniform1f(u.uCenter, s.centerFade);
+              gl.uniform2f(u.uPointer, pointer.sx, pointer.sy);
+              gl.uniform1f(u.uRadius, Math.max(1, s.cursorRadius * view.ratio));
+              gl.uniform1f(u.uPresence, pointer.presence);
+              gl.uniform1f(u.uReveal, Math.min(1, s.baseOpacity * 3.5));
+              gl.uniform1f(u.uTime, time);
+              gl.uniform1f(u.uFlow, s.flow);
+              gl.uniform1f(u.uFlowScale, Math.max(canvas.width, canvas.height) * 0.32);
+              if (s.backgroundColor) {
+                const [r, g, b] = parse(s.backgroundColor);
+                gl.uniform4f(u.uBackground, r, g, b, 1);
+              } else {
+                gl.uniform4f(u.uBackground, 0, 0, 0, 0);
+              }
+              gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+              const busy =
+                (!reduce && s.speed > 0) ||
+                activeCount > 0 ||
+                walkers.length > 0 ||
+                introLeft ||
+                (pointer.presence !== 0 && pointer.presence !== 1) ||
+                pointer.stir > 0;
+              if (busy) raf = requestAnimationFrame(frame);
+              else last = 0;
+            };
+
+            function wake() {
+              if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
+            }
+
+            let resizePending = false;
+            const applyResize = () => {
+              const s = settingsRef.current;
+              view.width = Math.max(1, container.clientWidth);
+              view.height = Math.max(1, container.clientHeight);
+              view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
+              canvas.width = Math.max(1, Math.round(view.width * view.ratio));
+              canvas.height = Math.max(1, Math.round(view.height * view.ratio));
+              syncType();
+              if (grid.cols) buildGrid();
+            };
+
+            const resize = () => {
+              resizePending = true;
+              wake();
+            };
+
+            const locate = event => {
+              const rect = container.getBoundingClientRect();
+              const x = event.clientX - rect.left;
+              const y = event.clientY - rect.top;
+              pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
+              pointer.x = x * view.ratio;
+              pointer.y = y * view.ratio;
+              if (pointer.fresh || pointer.presence < 0.02) {
+                pointer.sx = pointer.x;
+                pointer.sy = pointer.y;
+                pointer.fresh = false;
+              }
+            };
+
+            const onPointerMove = event => {
+              locate(event);
+              wake();
+            };
+
+            const onPointerDown = event => {
+              locate(event);
+              const s = settingsRef.current;
+              if (!pointer.inside || s.clickEffect === 'none' || reduce || !count) return;
+              spawnBurst(pointer.x, pointer.y);
+              wake();
+            };
+
+            const onPointerUp = event => {
+              if (event.pointerType !== 'mouse') pointer.inside = false;
+            };
+
+            const onPointerLeave = () => {
+              pointer.inside = false;
+              wake();
+            };
+
+            const onVisibility = () => {
+              last = 0;
+              wake();
+            };
+
+            const onFonts = () => {
+              typeKey = '';
+              wake();
+            };
+
+            const resizeObserver = new ResizeObserver(resize);
+            resizeObserver.observe(container);
+            const intersection = new IntersectionObserver(entries => {
+              visible = entries.some(entry => entry.isIntersecting);
+              if (visible) {
+                last = 0;
+                wake();
+              }
+            });
+            intersection.observe(container);
+            window.addEventListener('pointermove', onPointerMove, { passive: true });
+            window.addEventListener('pointerdown', onPointerDown, { passive: true });
+            window.addEventListener('pointerup', onPointerUp, { passive: true });
+            window.addEventListener('pointercancel', onPointerUp, { passive: true });
+            document.documentElement.addEventListener('pointerleave', onPointerLeave);
+            document.addEventListener('visibilitychange', onVisibility);
+            document.fonts?.addEventListener?.('loadingdone', onFonts);
+            resize();
+            wakeRef.current = wake;
+
+            return () => {
+              alive = false;
+              cancelAnimationFrame(raf);
+              wakeRef.current = null;
+              resizeObserver.disconnect();
+              intersection.disconnect();
+              window.removeEventListener('pointermove', onPointerMove);
+              window.removeEventListener('pointerdown', onPointerDown);
+              window.removeEventListener('pointerup', onPointerUp);
+              window.removeEventListener('pointercancel', onPointerUp);
+              document.documentElement.removeEventListener('pointerleave', onPointerLeave);
+              document.removeEventListener('visibilitychange', onVisibility);
+              document.fonts?.removeEventListener?.('loadingdone', onFonts);
+              gl.deleteTexture(atlasTexture);
+              gl.deleteTexture(stateTexture);
+              gl.deleteVertexArray(vao);
+              gl.deleteProgram(program.program);
+              gl.getExtension('WEBGL_lose_context')?.loseContext();
+            };
+          }, []);
+
+          useEffect(() => {
+            wakeRef.current?.();
+          });
+
+          return (
+            <div ref={containerRef} className={`letter-glitch${className ? ` ${className}` : ''}`} style={style} {...rest}>
+              <canvas ref={canvasRef} className="letter-glitch-canvas" aria-hidden="true" />
+            </div>
+          );
+        };
+
+        // --- CipherReveal Component with Two-Color Gradient (#808DF7 to #60E9D3) ---
+        const CipherReveal = ({
+            text = "Polash Kumer Sarker",
+            characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?",
+            speed = 40,
+            revealDelay = 450,
+            className = ""
+        }) => {
+            const [displayChars, setDisplayChars] = useState(() =>
+                text.split('').map(ch => ({ char: ch === ' ' ? ' ' : characters[Math.floor(Math.random() * characters.length)], resolved: ch === ' ' }))
+            );
+
+            const runCipher = () => {
+                let frame = 0;
+                const totalChars = text.length;
+                const interval = setInterval(() => {
+                    frame++;
+                    const lockedCount = Math.floor(frame / 2.2);
+                    setDisplayChars(
+                        text.split('').map((targetChar, idx) => {
+                            if (targetChar === ' ') return { char: ' ', resolved: true };
+                            if (idx < lockedCount) {
+                                return { char: targetChar, resolved: true };
+                            }
+                            return {
+                                char: characters[Math.floor(Math.random() * characters.length)],
+                                resolved: false
+                            };
+                        })
+                    );
+                    if (lockedCount >= totalChars) {
+                        clearInterval(interval);
+                    }
+                }, speed);
+                return interval;
+            };
+
+            useEffect(() => {
+                let activeInterval;
+                const timer = setTimeout(() => {
+                    activeInterval = runCipher();
+                }, revealDelay);
+                return () => {
+                    clearTimeout(timer);
+                    if (activeInterval) clearInterval(activeInterval);
+                };
+            }, [text]);
+
+            return (
+                <span 
+                    onMouseEnter={() => runCipher()}
+                    className={`inline-block cursor-pointer bg-gradient-to-r from-[#808DF7] to-[#60E9D3] bg-clip-text text-transparent ${className}`}
+                    title="Hover to re-decode"
+                >
+                    {displayChars.map((item, idx) => (
+                        <span
+                            key={idx}
+                            className={item.resolved ? "" : "font-mono text-[#60E9D3] opacity-85"}
+                        >
+                            {item.char}
+                        </span>
+                    ))}
+                </span>
+            );
+        };
+
+        // --- Single-String Typewriter Effect for "Hi, I am" ---
+        const SingleTypewriter = ({ text, speed = 110 }) => {
+            const [subIndex, setSubIndex] = useState(0);
+
+            useEffect(() => {
+                if (subIndex < text.length) {
+                    const timeout = setTimeout(() => {
+                        setSubIndex(prev => prev + 1);
+                    }, speed);
+                    return () => clearTimeout(timeout);
+                }
+            }, [subIndex, text, speed]);
+
+            return (
+                <span className="inline-flex items-center">
+                    <span>{text.substring(0, subIndex)}</span>
+                    <span className="ml-1 text-teal-400 animate-pulse font-mono font-normal">|</span>
+                </span>
+            );
+        };
+
+        // --- Multi-Word Typewriter Effect Helper Component ---
         const Typewriter = ({ words }) => {
             const [index, setIndex] = useState(0);
             const [subIndex, setSubIndex] = useState(0);
@@ -225,10 +1278,154 @@
             );
         };
 
+        // --- Scroll Reveal Wrapper Component ---
+        const AppearOnScroll = ({ children, delay = 0, className = "" }) => {
+            const domRef = useRef(null);
+            const [isVisible, setVisible] = useState(false);
+
+            useEffect(() => {
+                const el = domRef.current;
+                if (!el) return;
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                setVisible(true);
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    },
+                    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+                );
+                observer.observe(el);
+                return () => observer.disconnect();
+            }, []);
+
+            return (
+                <div
+                    ref={domRef}
+                    style={{ transitionDelay: `${delay}ms` }}
+                    className={`reveal-item ${isVisible ? 'is-visible' : ''} ${className}`}
+                >
+                    {children}
+                </div>
+            );
+        };
+
+        // --- Interactive 3D Cursor-Tracking Portrait Card ---
+        const InteractivePortrait = () => {
+            const cardRef = useRef(null);
+            const [transformStyle, setTransformStyle] = useState({
+                rotateX: 0,
+                rotateY: 0,
+                glareX: 50,
+                glareY: 50,
+                glareOpacity: 0
+            });
+
+            useEffect(() => {
+                const handleGlobalMouseMove = (e) => {
+                    if (!cardRef.current) return;
+                    const rect = cardRef.current.getBoundingClientRect();
+                    
+                    const cardCenterX = rect.left + rect.width / 2;
+                    const cardCenterY = rect.top + rect.height / 2;
+
+                    const deltaX = (e.clientX - cardCenterX) / (window.innerWidth / 2);
+                    const deltaY = (e.clientY - cardCenterY) / (window.innerHeight / 2);
+
+                    const maxTilt = 18; 
+                    const rotY = Math.max(-maxTilt, Math.min(maxTilt, deltaX * maxTilt));
+                    const rotX = Math.max(-maxTilt, Math.min(maxTilt, -deltaY * maxTilt));
+
+                    const glareX = ((e.clientX - rect.left) / rect.width) * 100;
+                    const glareY = ((e.clientY - rect.top) / rect.height) * 100;
+
+                    const isHovering = 
+                        e.clientX >= rect.left - 50 &&
+                        e.clientX <= rect.right + 50 &&
+                        e.clientY >= rect.top - 50 &&
+                        e.clientY <= rect.bottom + 50;
+
+                    setTransformStyle({
+                        rotateX: rotX,
+                        rotateY: rotY,
+                        glareX: glareX,
+                        glareY: glareY,
+                        glareOpacity: isHovering ? 0.35 : 0.12
+                    });
+                };
+
+                window.addEventListener('mousemove', handleGlobalMouseMove);
+                return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
+            }, []);
+
+            return (
+                <div className="perspective-container flex justify-center items-center py-6">
+                    <div 
+                        ref={cardRef}
+                        className="relative w-72 h-80 sm:w-84 sm:h-96 rounded-3xl p-3 border border-white/10 bg-gradient-to-tr from-white/10 to-white/0 backdrop-blur-xl shadow-2xl preserve-3d transition-transform duration-150 ease-out cursor-pointer group"
+                        style={{
+                            transform: `rotateX(${transformStyle.rotateX}deg) rotateY(${transformStyle.rotateY}deg)`
+                        }}
+                    >
+                        <div 
+                            className="absolute -inset-2 bg-gradient-to-tr from-indigo-600 to-rose-500 rounded-3xl blur-2xl opacity-40 transition-opacity duration-300 group-hover:opacity-75 -z-10"
+                            style={{
+                                transform: 'translateZ(-30px)'
+                            }}
+                        ></div>
+
+                        <div className="absolute inset-0 border-2 border-dashed border-teal-500/20 rounded-3xl animate-[spin_40s_linear_infinite] pointer-events-none"></div>
+
+                        <div className="w-full h-full rounded-2xl overflow-hidden border border-white/10 relative bg-slate-900 preserve-3d">
+                            <img 
+                                src="POLASH2.png" 
+                                alt="Sree Polash Kumer Sarker" 
+                                className="w-full h-full object-cover transition-transform duration-150 scale-105"
+                                style={{
+                                    transform: `translateX(${-transformStyle.rotateY * 0.7}px) translateY(${transformStyle.rotateX * 0.7}px) scale(1.08)`
+                                }}
+                                onError={(e) => {
+                                    e.target.src = "https://POLASH";
+                                }}
+                            />
+
+                            <div 
+                                className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+                                style={{
+                                    background: `radial-gradient(circle 180px at ${transformStyle.glareX}% ${transformStyle.glareY}%, rgba(255,255,255,${transformStyle.glareOpacity}), transparent 80%)`
+                                }}
+                            ></div>
+
+                            <div 
+                                className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center space-x-1.5 shadow-lg"
+                                style={{ transform: 'translateZ(25px)' }}
+                            >
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                
+                            </div>
+
+                            <div 
+                                className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/20 to-transparent flex flex-col justify-end p-5 text-center"
+                                style={{ transform: 'translateZ(20px)' }}
+                            >
+                                <p className="text-white font-extrabold text-base tracking-wide">Polash Kumer Sarker</p>
+                                <p className="text-teal-400 text-[11px]">MA Economics & BBA Accounting</p>
+                                <p className="text-slate-400 text-[10px]">Rajshahi, Bangladesh</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
             const [copied, setCopied] = useState(false);
             const [activeRole, setActiveRole] = useState('all');
             const [contactSubmitted, setContactSubmitted] = useState(false);
+            const [navCollapsed, setNavCollapsed] = useState(false);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
             // Macroeconomics Simulator States
             const [spending, setSpending] = useState(50);
@@ -270,15 +1467,15 @@
                 if (cmd === 'help') {
                     response = 'Available Commands: "about", "skills", "experience", "education", "scholarship", "references", "clear"';
                 } else if (cmd === 'about') {
-                    response = 'Polash Kumer Sarker: MSc Economics student at Nalanda University (ICCR Scholar) & BBA in Accounting graduate from Rajshahi College. Expertise in SPSS, Python, Graphic Design, and Video Editing.';
+                    response = 'Polash Kumer Sarker: MA Economics student at Nalanda University (ICCR Scholar) & BBA in Accounting graduate from Rajshahi College. Expertise in SPSS, Python, Graphic Design, and Video Editing.';
                 } else if (cmd === 'skills') {
                     response = 'Data Analysis: Python (NumPy, SciPy), IBM SPSS, MS Power BI | Accounting: QuickBooks, MS Excel | Design & Video: Photoshop, Canva, Premiere Pro, After Effects, CapCut | Web: HTML, CSS, WordPress.';
                 } else if (cmd === 'experience') {
                     response = '1. Research Intern at SACIN (Circular Economy)\n2. Union Digital Entrepreneur (Local Union Council)\n3. Academic Mentor & Tutor (2021-2025)\n4. Independent Graphic Designer & Content Creator.';
                 } else if (cmd === 'education') {
-                    response = 'MSc Economics (Nalanda University, 2027) | BBA Accounting (Rajshahi College, CGPA: 3.13) | HSC Business Studies (GPA: 4.33).';
+                    response = 'MA Economics (Nalanda University, 2027) | BBA Accounting (Rajshahi College, CGPA: 3.13) | HSC Business Studies (GPA: 4.33).';
                 } else if (cmd === 'scholarship') {
-                    response = 'Awarded the prestigious ICCR (Indian Council for Cultural Relations) Postgraduate Scholarship for MSc in Economics.';
+                    response = 'Awarded the prestigious ICCR (Indian Council for Cultural Relations) Postgraduate Scholarship for MA in Economics.';
                 } else if (cmd === 'references') {
                     response = 'Academic Ref 1: Dr. Kishore Kumar Dhavala (Nalanda Univ, k.dhavala@nalandauniv.edu.in)\nAcademic Ref 2: Anutosh Kumar Pramanik (Rajshahi College, anuais12@gmail.com)';
                 } else if (cmd === 'clear') {
@@ -321,7 +1518,7 @@
 
             const timelineEvents = [
                 {
-                    year: "June 2026 - Present",
+                    year: "June 2026 - 09 September 2026",
                     title: "Research Intern",
                     institution: "Society for Asian Circular Innovation Network (SACIN)",
                     details: "Collaborate on regional economic, policy, and developmental research projects focused on circular economy and sustainable development across Asia. Assist in producing infographics and multimedia assets.",
@@ -439,7 +1636,7 @@
                     description: "Independence Day poster for social media."
                 },
                 {
-                    id: "g1",
+                    id: "g5",
                     title: "Mother Language Day Program Banner",
                     tool: "Adobe Photoshop",
                     type: "Social Media Banner",
@@ -447,7 +1644,7 @@
                     description: "Official event invitation poster and social banner created for Youth Club of Bangladesh."
                 },
                 {
-                    id: "g2",
+                    id: "g6",
                     title: "Announcement",
                     tool: "Photoshop & Canva",
                     type: "Poster",
@@ -455,7 +1652,7 @@
                     description: "Official announcement poster and social banner created for Youth Club of Bangladesh."
                 },
                 {
-                    id: "g3",
+                    id: "g7",
                     title: "Rajshahi College Event Poster",
                     tool: "Adobe Photoshop",
                     type: "Poster Design",
@@ -463,7 +1660,7 @@
                     description: "Tour Announcement poster and social media banner created for Department of Accounting, Rajshahi College."
                 },
                 {
-                    id: "g4",
+                    id: "g8",
                     title: "Brand Logo & Visual Identity Design",
                     tool: "Photoshop & Canva",
                     type: "Logo & Branding",
@@ -476,6 +1673,7 @@
             const [activeGraphicModal, setActiveGraphicModal] = useState(null);
 
             const certifications = [
+                { title: "One Million Leaders Asia (OMLAS) Fellowship 2026", issuer: "By OMLAS and NELIS Global", icon: "fa-globe" },
                 { title: "Aspire Leadership Program", issuer: "Aspire Institute (Harvard affiliated)", icon: "fa-award" },
                 { title: "Corporate Accounts & Finance Procedures", issuer: "Bijoy IT & Co.", icon: "fa-calculator" },
                 { title: "Digital Accounting with QuickBooks", issuer: "Certified Course", icon: "fa-book" },
@@ -486,708 +1684,801 @@
             ];
 
             return (
-                <div className="min-h-screen text-slate-100 selection:bg-rose-500 selection:text-white">
+                <div className="min-h-screen text-slate-100 selection:bg-rose-500 selection:text-white relative">
                     
-                    {/* Navigation Bar */}
-                    <nav className="sticky top-0 z-50 glass-panel border-b border-white/5 px-6 py-4 transition-all">
-                        <div className="max-w-6xl mx-auto flex items-center justify-between">
-                            <a href="#" className="flex items-center space-x-3 group">
-                                <img 
-                                    src="PKlogo.png" 
-                                    alt="Logo" 
-                                    className="w-7 h-7 rounded-xl object-cover shadow-lg" 
-                                />
-                                <span className="font-bold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-400 group-hover:to-rose-400 transition-all">
-                                    Polash Kumer
-                                </span>
-                            </a>
-                            <div className="hidden md:flex items-center space-x-5 text-xs font-semibold text-slate-300">
-                                <a href="#about" className="hover:text-white transition-all">About</a>
-                                <a href="#video-works" className="hover:text-rose-400 transition-all font-bold text-rose-300"><i className="fa-solid fa-play text-[10px] mr-1"></i>Video Editing</a>
-                                <a href="#graphic-works" className="hover:text-rose-400 transition-all font-bold text-rose-300"><i className="fa-solid fa-palette text-[10px] mr-1"></i>Graphic Design</a>
-                                <a href="#journey" className="hover:text-white transition-all">Experience</a>
-                                <a href="#skills-certs" className="hover:text-white transition-all">Skills & Certs</a>
-                                <a href="#ledger-simulator" className="hover:text-white transition-all">Budget Game</a>
-                                <a href="#contact" className="hover:text-white transition-all">Contact</a>
-                            </div>
-                            <button onClick={copyEmailToClipboard} className="hidden lg:flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:brightness-110 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md transition-all">
-                                <i className="fa-solid fa-envelope text-xs"></i>
-                                <span>{copied ? 'Copied Email!' : 'Get Email'}</span>
-                            </button>
-                        </div>
-                    </nav>
+                    {/* Fixed Full-Website LetterGlitch Background */}
+                    <div className="fixed inset-0 z-0 pointer-events-none">
+                        <LetterGlitch
+                            glitchColors={['#818cf8', '#5eead4', '#fb7185']}
+                            baseColor="#94a3b8"
+                            backgroundColor="#0b0d14"
+                            baseOpacity={0.14}
+                            glitchAmount={0.45}
+                            speed={1}
+                            flow={0.5}
+                            clickEffect="tear"
+                        />
+                    </div>
 
-                    {/* Hero Section */}
-                    <header id="about" className="relative py-20 px-6 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
-                        <div className="lg:col-span-7 space-y-6 text-left">
-                            <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full text-xs text-slate-300">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span>MA Economics Student • Nalanda University (ICCR Scholar)</span>
-                            </div>
-                            
-                            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
-                                Hi, I am <br/>
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-teal-300 to-rose-400">
-                                    Polash Kumer Sarker
-                                </span>
-                            </h1>
+                    {/* Main Content Wrapper */}
+                    <div className="relative z-10">
 
-                            <p className="text-sm sm:text-base text-slate-300 max-w-xl leading-relaxed font-light">
-                                Economics Student, Content Creator.<span className="text-teal-400 font-medium"> Expertise in Accounting</span> with creative skills in <span className="text-rose-400 font-medium">Graphic Design & Video Editing</span>.
-                            </p>
-
-                            <div className="pt-1 text-xs sm:text-sm">
-                                <span className="text-slate-400 mr-2">Core Toolkit:</span>
-                                <Typewriter words={["Python (NumPy, SciPy)", "IBM SPSS & Power BI", "Adobe Premiere Pro & Photoshop", "QuickBooks & Accounting"]} />
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-3 pt-4">
-                                <a href="#video-works" className="bg-gradient-to-r from-rose-500 to-indigo-600 text-white font-bold px-5 py-3 rounded-2xl hover:brightness-110 transition-all text-xs flex items-center space-x-2 shadow-lg shadow-rose-500/20">
-                                    <i className="fa-solid fa-circle-play text-sm"></i>
-                                    <span>Video Works</span>
-                                </a>
-                                <a href="#graphic-works" className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold px-5 py-3 rounded-2xl transition-all text-xs flex items-center space-x-2">
-                                    <i className="fa-solid fa-palette text-rose-400"></i>
-                                    <span>Graphic Designs</span>
-                                </a>
-                                <button onClick={copyEmailToClipboard} className="bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-bold px-4 py-3 rounded-2xl transition-all text-xs flex items-center space-x-1.5">
-                                    <i className="fa-regular fa-envelope"></i>
-                                    <span>{copied ? 'Copied!' : 'Email Me'}</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Profile Image Showcase */}
-                        <div className="lg:col-span-5 flex justify-center relative">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-rose-500 rounded-full blur-[40px] opacity-20 transform scale-75"></div>
-                            
-                            <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full p-4 border border-white/5 bg-gradient-to-tr from-white/5 to-white/0 backdrop-blur-xl shadow-2xl flex items-center justify-center">
-                                <div className="absolute inset-0 border-2 border-dashed border-slate-500/10 rounded-full animate-[spin_50s_linear_infinite]"></div>
-                                <div className="absolute w-full h-full border-t border-b border-indigo-500/20 rounded-full animate-[spin_20s_linear_infinite]"></div>
-                                
-                                <div className="w-full h-full rounded-full overflow-hidden border border-white/10 relative bg-slate-900 group">
+                        {/* Collapsible Floating Sticky Navigation Bar */}
+                        <div className="sticky top-4 z-50 px-4 flex flex-col items-center pointer-events-none">
+                            <nav className={`pointer-events-auto glass-panel border border-white/10 shadow-2xl shadow-black/60 transition-all duration-500 ease-in-out ${
+                                navCollapsed 
+                                    ? 'rounded-full px-3.5 py-2 flex items-center space-x-3' 
+                                    : 'rounded-full px-5 py-3 w-full max-w-5xl flex items-center justify-between'
+                            }`}>
+                                {/* Brand Logo */}
+                                <a href="#" className="flex items-center space-x-2.5 group shrink-0">
                                     <img 
-                                        src="POLASH2.png" 
-                                        alt="Sree Polash Kumer Sarker" 
-                                        className="w-full h-full object-cover transition-all duration-700 scale-105"
-                                        onError={(e) => {
-                                            e.target.src = "https://POLASH";
-                                        }}
+                                        src="PKlogo.png" 
+                                        alt="Logo" 
+                                        className="w-7 h-7 rounded-xl object-cover shadow-lg" 
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex flex-col justify-end p-5 text-center">
-                                        <p className="text-white font-bold text-sm tracking-wide">Polash Kumer Sarker</p>
-                                        <p className="text-teal-400 text-[11px]">MA Economics & BBA Accounting</p>
-                                        <p className="text-slate-400 text-[10px]">Rajshahi, Bangladesh</p>
+                                    <span className="font-bold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-400 group-hover:to-rose-400 transition-all text-sm">
+                                        Polash Kumer
+                                    </span>
+                                </a>
+
+                                {/* Desktop Links (Hidden when collapsed) */}
+                                {!navCollapsed && (
+                                    <div className="hidden md:flex items-center space-x-5 text-xs font-semibold text-slate-300">
+                                        <a href="#about" className="hover:text-white transition-all">About</a>
+                                        <a href="#video-works" className="hover:text-rose-400 transition-all font-bold text-rose-300"><i className="fa-solid fa-play text-[10px] mr-1"></i>Video Editing</a>
+                                        <a href="#graphic-works" className="hover:text-rose-400 transition-all font-bold text-rose-300"><i className="fa-solid fa-palette text-[10px] mr-1"></i>Graphic Design</a>
+                                        <a href="#journey" className="hover:text-white transition-all">Experience</a>
+                                        <a href="#skills-certs" className="hover:text-white transition-all">Skills </a>
+                                        <a href="#ledger-simulator" className="hover:text-white transition-all">Budget Game</a>
+                                        <a href="#contact" className="hover:text-white transition-all">Contact</a>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </header>
+                                )}
 
-                    {/* SECTION 1: VIDEO EDITING SHOWCASE */}
-                    <section id="video-works" className="py-20 px-6 border-t border-white/5 relative z-10 bg-black/20">
-                        <div className="max-w-6xl mx-auto space-y-10">
-                            
-                            <div className="text-center max-w-2xl mx-auto space-y-3">
-                                <div className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 font-bold text-xs uppercase tracking-wider">
-                                    <i className="fa-solid fa-video mr-1.5"></i> Video Editing Works
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Video Production & Editing Showcase
-                                </h2>
-                                <p className="text-slate-400 text-sm">
-                                    Scripting, video editing, and motion graphics created using <strong className="text-white">Adobe Premiere Pro, After Effects, & CapCut</strong>. Click any video card to play the full video!
-                                </p>
-                            </div>
-
-                            {/* Video Cards Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {videoWorks.map((vid) => (
-                                    <div 
-                                        key={vid.id}
-                                        className="glass-panel rounded-3xl overflow-hidden border border-white/10 hover:border-rose-500/40 transition-all shadow-xl group flex flex-col justify-between"
-                                    >
-                                        <div>
-                                            {/* Thumbnail Container with Play Overlay */}
-                                            <div 
-                                                onClick={() => setActiveVideoModal(vid)}
-                                                className="relative h-48 overflow-hidden bg-black cursor-pointer group"
-                                            >
-                                                <img 
-                                                    src={vid.thumbnail} 
-                                                    alt={vid.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
-                                                />
-                                                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
-                                                    <div className="w-14 h-14 rounded-full bg-rose-600 group-hover:bg-rose-500 text-white flex items-center justify-center text-xl shadow-xl transform group-hover:scale-110 transition-all">
-                                                        <i className="fa-solid fa-play ml-1"></i>
-                                                    </div>
-                                                </div>
-                                                <span className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-white text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border border-white/10">
-                                                    {vid.category}
-                                                </span>
-                                            </div>
-
-                                            <div className="p-5 space-y-2">
-                                                <h3 className="text-base font-bold text-white group-hover:text-rose-400 transition-colors">
-                                                    {vid.title}
-                                                </h3>
-                                                <p className="text-xs text-slate-400 font-light leading-relaxed">
-                                                    {vid.description}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-5 pt-0 flex justify-between items-center border-t border-white/5 mt-4">
-                                            <span className="text-[10px] font-mono text-rose-300 font-semibold">
-                                                <i className="fa-solid fa-wand-magic-sparkles mr-1"></i>
-                                                {vid.software}
-                                            </span>
-                                            <button 
-                                                onClick={() => setActiveVideoModal(vid)}
-                                                className="text-xs font-bold text-white hover:text-rose-400 flex items-center space-x-1"
-                                            >
-                                                <span>Watch Video</span>
-                                                <i className="fa-solid fa-chevron-right text-[10px]"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* PLAYABLE YOUTUBE EMBED MODAL */}
-                    {activeVideoModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-                            <div className="relative bg-[#0f111a] border border-white/10 rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col shadow-2xl">
-                                
-                                <div className="p-4 bg-slate-950 flex justify-between items-center border-b border-white/10">
-                                    <div className="flex items-center space-x-2">
-                                        <i className="fa-solid fa-circle-play text-rose-500"></i>
-                                        <span className="text-xs font-bold text-white">{activeVideoModal.title}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-3">
-                                        <a 
-                                            href={`https://www.youtube.com/watch?v=${activeVideoModal.youtubeId}`} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center space-x-1"
-                                        >
-                                            <i className="fa-brands fa-youtube"></i>
-                                            <span>Open on YouTube</span>
-                                        </a>
-                                        <button 
-                                            onClick={() => setActiveVideoModal(null)}
-                                            className="w-8 h-8 rounded-xl bg-white/10 text-white hover:bg-rose-500 flex items-center justify-center transition-all text-sm"
-                                        >
-                                            <i className="fa-solid fa-xmark"></i>
+                                {/* Right Action Buttons */}
+                                <div className="flex items-center space-x-2 shrink-0">
+                                    {!navCollapsed && (
+                                        <button onClick={copyEmailToClipboard} className="hidden lg:flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:brightness-110 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md transition-all">
+                                            <i className="fa-solid fa-envelope text-xs"></i>
+                                            <span>{copied ? 'Copied Email!' : 'Get Email'}</span>
                                         </button>
-                                    </div>
-                                </div>
+                                    )}
 
-                                <div className="relative w-full pb-[56.25%] bg-black">
-                                    <iframe 
-                                        className="absolute top-0 left-0 w-full h-full"
-                                        src={`https://www.youtube.com/embed/${activeVideoModal.youtubeId}?autoplay=1&rel=0&modestbranding=1`} 
-                                        title={activeVideoModal.title}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                        allowFullScreen
-                                    ></iframe>
-                                </div>
-
-                                <div className="p-6 space-y-2 bg-slate-900">
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                        {activeVideoModal.description}
-                                    </p>
-                                    <p className="text-[11px] font-mono text-teal-400">
-                                        Software used: {activeVideoModal.software}
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                    )}
-
-                    {/* SECTION 2: GRAPHIC DESIGN SHOWCASE */}
-                    <section id="graphic-works" className="py-20 px-6 relative z-10">
-                        <div className="max-w-6xl mx-auto space-y-10">
-                            
-                            <div className="text-center max-w-2xl mx-auto space-y-3">
-                                <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 font-bold text-xs uppercase tracking-wider">
-                                    <i className="fa-solid fa-palette mr-1.5"></i> Graphic Design Works
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Graphics & Visual Design Gallery
-                                </h2>
-                                <p className="text-slate-400 text-sm">
-                                    Social media graphics, banners, posters, and infographics crafted using <strong className="text-white">Adobe Photoshop & Canva</strong> for campus clubs, events, and research networks.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {graphicsWorks.map((gfx) => (
-                                    <div 
-                                        key={gfx.id}
-                                        onClick={() => setActiveGraphicModal(gfx)}
-                                        className="glass-panel rounded-3xl overflow-hidden border border-white/5 hover:border-indigo-500/40 transition-all cursor-pointer group shadow-lg flex flex-col justify-between"
+                                    {/* Collapse / Expand Pill Toggle Button */}
+                                    <button 
+                                        onClick={() => {
+                                            setNavCollapsed(!navCollapsed);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        title={navCollapsed ? "Expand Navigation" : "Collapse Navigation"}
+                                        className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:text-teal-300 transition-all text-xs"
                                     >
-                                        <div>
-                                            <div className="relative h-48 overflow-hidden bg-slate-900">
-                                                <img 
-                                                    src={gfx.image} 
-                                                    alt={gfx.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85 group-hover:opacity-100"
-                                                    onError={(e) => {
-                                                        e.target.src = "https://placehold.co/600x400/0f1322/6366f1?text=Graphic+Design";
-                                                    }}
-                                                />
-                                                <div className="absolute inset-0 bg-indigo-950/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                                                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm shadow-lg">
-                                                        <i className="fa-solid fa-magnifying-glass-plus"></i>
-                                                    </div>
-                                                </div>
-                                                <span className="absolute top-2.5 left-2.5 bg-black/70 backdrop-blur-md text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border border-white/10">
-                                                    {gfx.type}
-                                                </span>
-                                            </div>
-
-                                            <div className="p-4 space-y-1">
-                                                <h3 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
-                                                    {gfx.title}
-                                                </h3>
-                                                <p className="text-[11px] text-slate-400 font-light line-clamp-2">
-                                                    {gfx.description}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-4 pt-0 border-t border-white/5 mt-2">
-                                            <span className="text-[10px] font-mono text-indigo-400 font-medium">
-                                                {gfx.tool}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* GRAPHIC DESIGN LIGHTBOX MODAL */}
-                    {activeGraphicModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-                            <div className="relative bg-[#0f111a] border border-white/10 rounded-3xl overflow-hidden max-w-3xl w-full flex flex-col shadow-2xl">
-                                
-                                <button 
-                                    onClick={() => setActiveGraphicModal(null)}
-                                    className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl bg-black/70 border border-white/10 text-white hover:text-rose-400 flex items-center justify-center transition-all text-base"
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
-                                </button>
-
-                                <div className="relative bg-black flex items-center justify-center max-h-[60vh] overflow-hidden p-4">
-                                    <img 
-                                        src={activeGraphicModal.image} 
-                                        alt={activeGraphicModal.title} 
-                                        className="max-h-[55vh] object-contain rounded-xl"
-                                    />
-                                </div>
-
-                                <div className="p-6 space-y-2 bg-slate-900 border-t border-white/5">
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded">
-                                            {activeGraphicModal.tool}
-                                        </span>
-                                        <span className="text-[10px] font-mono text-slate-400">{activeGraphicModal.type}</span>
-                                    </div>
-                                    <h3 className="text-lg font-bold text-white">{activeGraphicModal.title}</h3>
-                                    <p className="text-xs text-slate-300 leading-relaxed">{activeGraphicModal.description}</p>
-                                </div>
-
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Timeline Section */}
-                    <section id="journey" className="py-20 px-6 border-t border-white/5 relative z-10 bg-black/10">
-                        <div className="max-w-4xl mx-auto space-y-10">
-                            
-                            <div className="text-center max-w-2xl mx-auto space-y-3">
-                                <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
-                                    Career & Academic Record
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Education & Experience Timeline
-                                </h2>
-                                <p className="text-slate-400 text-sm">
-                                    Official history from my CV including university degrees, internships, and student club leadership.
-                                </p>
-                            </div>
-
-                            <div className="relative border-l-2 border-slate-800 ml-4 md:ml-36 space-y-8">
-                                {filteredTimeline.map((item, idx) => (
-                                    <div key={idx} className="relative group pl-6 md:pl-10">
-                                        <div className="hidden md:block absolute right-full mr-10 top-0 text-right w-28">
-                                            <span className="font-mono font-bold text-slate-400 text-xs">{item.year}</span>
-                                        </div>
-
-                                        <div className="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700 group-hover:border-teal-400 transition-all"></div>
-
-                                        <div className="glass-panel hover:border-slate-700/60 rounded-3xl p-6 space-y-2 shadow-lg transition-all">
-                                            <div className="md:hidden inline-block text-[11px] font-mono font-bold text-teal-400 mb-1">
-                                                {item.year}
-                                            </div>
-                                            <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-teal-400 transition-colors">
-                                                {item.title}
-                                            </h3>
-                                            <span className="text-xs font-medium bg-white/5 text-slate-300 px-3 py-1 rounded-md border border-white/10 inline-block">
-                                                {item.institution}
-                                            </span>
-                                            <p className="text-xs text-slate-400 leading-relaxed font-light">
-                                                {item.details}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* Certifications Section */}
-                    <section id="skills-certs" className="py-20 px-6 relative z-10 border-t border-white/5">
-                        <div className="max-w-6xl mx-auto space-y-10">
-                            
-                            <div className="text-center max-w-2xl mx-auto space-y-3">
-                                <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 font-bold text-xs uppercase tracking-wider">
-                                    Technical Competencies
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Certifications & Training
-                                </h2>
-                                <p className="text-slate-400 text-sm">
-                                    Specialized training courses and official certificates completed alongside my university degrees.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {certifications.map((cert, idx) => (
-                                    <div key={idx} className="glass-panel rounded-2xl p-4 border border-white/5 flex items-center space-x-3.5 hover:border-indigo-500/30 transition-all">
-                                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg">
-                                            <i className={`fa-solid ${cert.icon}`}></i>
-                                        </div>
-                                        <div className="text-xs">
-                                            <h3 className="font-bold text-white">{cert.title}</h3>
-                                            <p className="text-slate-400 text-[11px]">{cert.issuer}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* Interactive Budget Simulator */}
-                    <section id="ledger-simulator" className="py-20 px-6 relative z-10 border-t border-white/5 bg-black/20">
-                        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                            
-                            <div className="lg:col-span-6 space-y-6">
-                                <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
-                                    Interactive Tool
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Interactive Macroeconomic Policy Simulator
-                                </h2>
-                                <p className="text-slate-400 text-sm leading-relaxed">
-                                    Slide fiscal variables below to watch GDP growth, audit trust, and public metrics calculate in real-time!
-                                </p>
-
-                                <div className="space-y-4 pt-2">
-                                    <div className="space-y-1.5">
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="font-bold text-white">Public Sector Spending</span>
-                                            <span className="font-mono text-teal-400 font-bold">{spending} Billion BDT</span>
-                                        </div>
-                                        <input 
-                                            type="range" min="10" max="100" value={spending} 
-                                            onChange={(e) => setSpending(parseInt(e.target.value))}
-                                            className="w-full accent-teal-400 bg-white/5 h-2 rounded-lg cursor-pointer"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-1.5">
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="font-bold text-white">Taxation Rate</span>
-                                            <span className="font-mono text-teal-400 font-bold">{taxRate}%</span>
-                                        </div>
-                                        <input 
-                                            type="range" min="15" max="60" value={taxRate} 
-                                            onChange={(e) => setTaxRate(parseInt(e.target.value))}
-                                            className="w-full accent-teal-400 bg-white/5 h-2 rounded-lg cursor-pointer"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-1.5">
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="font-bold text-white">Monetary Policy Rate</span>
-                                            <span className="font-mono text-teal-400 font-bold">{interestRate}%</span>
-                                        </div>
-                                        <input 
-                                            type="range" min="2.0" max="12.0" step="0.5" value={interestRate} 
-                                            onChange={(e) => setInterestRate(parseFloat(e.target.value))}
-                                            className="w-full accent-teal-400 bg-white/5 h-2 rounded-lg cursor-pointer"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="lg:col-span-6">
-                                <div className="glass-panel rounded-3xl p-6 border border-white/5 bg-slate-900/40 shadow-2xl space-y-5">
-                                    <h3 className="font-bold text-sm text-white border-b border-white/5 pb-2">
-                                        <i className="fa-solid fa-chart-line mr-2 text-teal-400"></i>
-                                        Live Economic Equilibrium Metrics
-                                    </h3>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
-                                            <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">GDP Growth</span>
-                                            <span className="text-xl font-extrabold text-emerald-400 font-mono">{gdpGrowth}%</span>
-                                        </div>
-
-                                        <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
-                                            <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">Audit Credibility</span>
-                                            <span className="text-xl font-extrabold text-cyan-400 font-mono">{auditRating}%</span>
-                                        </div>
-
-                                        <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
-                                            <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">System Security</span>
-                                            <span className="text-xl font-extrabold text-indigo-400 font-mono">{systemSafety}%</span>
-                                        </div>
-
-                                        <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
-                                            <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">Public Satisfaction</span>
-                                            <span className="text-xl font-extrabold text-rose-400 font-mono">{crowdSatisfaction}%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* Shell Diagnostic Terminal */}
-                    <section id="cyber-terminal" className="py-20 px-6 relative z-10">
-                        <div className="max-w-4xl mx-auto space-y-6">
-                            <div className="text-center max-w-2xl mx-auto space-y-2">
-                                <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
-                                    Interactive Shell
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Interactive CV Diagnostic Terminal
-                                </h2>
-                                <p className="text-slate-400 text-xs sm:text-sm">
-                                    Type commands directly to query my academic qualifications, experience, or references.
-                                </p>
-                            </div>
-
-                            <div className="glass-panel border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[380px]">
-                                <div className="bg-[#0b0d14] px-6 py-3 border-b border-slate-900 flex justify-between items-center text-xs">
-                                    <div className="flex space-x-2">
-                                        <div className="w-3 h-3 rounded-full bg-rose-500/40"></div>
-                                        <div className="w-3 h-3 rounded-full bg-amber-500/40"></div>
-                                        <div className="w-3 h-3 rounded-full bg-emerald-500/40"></div>
-                                    </div>
-                                    <div className="font-mono text-slate-500 font-bold text-[11px]">polash-cv-terminal.sh</div>
-                                    <div className="w-4"></div>
-                                </div>
-
-                                <div className="flex-1 p-5 overflow-y-auto font-mono text-xs space-y-3 bg-[#0b0d14]/95">
-                                    {terminalHistory.map((line, idx) => (
-                                        <div key={idx} className="space-y-1">
-                                            {line.type === 'input' ? (
-                                                <div className="flex items-start space-x-2 text-teal-400">
-                                                    <span className="font-bold">polash-guest:~$&nbsp;</span>
-                                                    <span className="text-slate-100">{line.text}</span>
-                                                </div>
-                                            ) : (
-                                                <div className="text-slate-400 pl-4 whitespace-pre-wrap leading-relaxed text-[11px]">
-                                                    {line.text}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                    <div ref={terminalEndRef}></div>
-                                </div>
-
-                                <div className="bg-slate-950 px-4 py-2 border-t border-slate-900 flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
-                                    <span>Try these commands:</span>
-                                    <button onClick={() => runQuickCommand('skills')} className="bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/10 px-2 py-0.5 rounded transition-all">skills</button>
-                                    <button onClick={() => runQuickCommand('scholarship')} className="bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/10 px-2 py-0.5 rounded transition-all">scholarship</button>
-                                    <button onClick={() => runQuickCommand('experience')} className="bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/10 px-2 py-0.5 rounded transition-all">experience</button>
-                                </div>
-
-                                <form onSubmit={handleTerminalSubmit} className="bg-slate-950 p-3.5 border-t border-slate-900 flex items-center space-x-2">
-                                    <span className="font-mono text-xs text-teal-400 font-bold">polash-guest:~$&nbsp;</span>
-                                    <input 
-                                        type="text" 
-                                        value={terminalInput} 
-                                        onChange={(e) => setTerminalInput(e.target.value)}
-                                        placeholder="Type 'help' and press Enter..."
-                                        className="bg-transparent text-xs font-mono text-white outline-none flex-1 border-none focus:ring-0"
-                                    />
-                                    <button type="submit" className="text-teal-400 hover:text-white transition-all text-xs font-bold px-2">
-                                        <i className="fa-solid fa-play"></i>
+                                        <i className={`fa-solid ${navCollapsed ? 'fa-up-right-and-down-left-from-center' : 'fa-down-left-and-up-right-to-center'}`}></i>
                                     </button>
-                                </form>
-                            </div>
-                        </div>
-                    </section>
 
-                    {/* Contact & References Section */}
-                    <section id="contact" className="py-20 px-6 border-t border-white/5 relative z-10">
-                        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
-                            
-                            <div className="lg:col-span-5 space-y-6">
-                                <div className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 font-bold text-xs uppercase tracking-wider">
-                                    Get In Touch
-                                </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                                    Let's Connect & Collaborate!
-                                </h2>
-                                <p className="text-slate-400 text-sm leading-relaxed">
-                                    Open for research collaborations, video editing projects, graphic design commissions, or academic opportunities.
-                                </p>
-
-                                <div className="space-y-3.5 pt-2">
-                                    <div className="flex items-center space-x-3 text-slate-300">
-                                        <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400">
-                                            <i className="fa-solid fa-map-pin"></i>
-                                        </div>
-                                        <div className="text-xs">
-                                            <p className="font-bold text-white">Location</p>
-                                            <p className="text-slate-400">Rajshahi, Bangladesh / Nalanda University, India</p>
-                                        </div>
-                                    </div>
-
-                                    <div onClick={copyEmailToClipboard} className="flex items-center space-x-3 text-slate-300 cursor-pointer group">
-                                        <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400 group-hover:bg-rose-500/10 transition-all">
-                                            <i className="fa-solid fa-envelope"></i>
-                                        </div>
-                                        <div className="text-xs">
-                                            <p className="font-bold text-white group-hover:text-rose-400 transition-colors">Primary Email (Click to copy)</p>
-                                            <p className="text-slate-400 font-mono">palash.kumer.pk@gmail.com</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center space-x-3 text-slate-300">
-                                        <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400">
-                                            <i className="fa-solid fa-phone"></i>
-                                        </div>
-                                        <div className="text-xs">
-                                            <p className="font-bold text-white">Phone / WhatsApp</p>
-                                            <p className="text-slate-400 font-mono">+8801774961395</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 space-y-2 border-t border-white/5">
-                                    <h3 className="text-xs font-bold text-white uppercase tracking-wider text-slate-400">Academic References</h3>
-                                    <div className="space-y-2 text-xs">
-                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                                            <p className="font-bold text-white">Dr. Kishore Kumar Dhavala</p>
-                                            <p className="text-slate-400 text-[11px]">Associate Professor, Nalanda University</p>
-                                            <p className="text-teal-400 font-mono text-[10px]">k.dhavala@nalandauniv.edu.in</p>
-                                        </div>
-                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                                            <p className="font-bold text-white">Anutosh Kumar Pramanik</p>
-                                            <p className="text-slate-400 text-[11px]">Assistant Professor, Rajshahi College</p>
-                                            <p className="text-teal-400 font-mono text-[10px]">anuais12@gmail.com</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="lg:col-span-7">
-                                <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/5 bg-slate-900/40 relative shadow-2xl">
-                                    {contactSubmitted ? (
-                                        <div className="text-center py-12 space-y-4">
-                                            <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-3xl mx-auto animate-bounce">
-                                                <i className="fa-solid fa-envelope-circle-check"></i>
-                                            </div>
-                                            <h3 className="text-xl font-bold text-white">Message Received!</h3>
-                                            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                                                Thank you for reaching out, Sree Polash Kumer Sarker will respond shortly.
-                                            </p>
-                                            <button onClick={() => setContactSubmitted(false)} className="text-xs font-bold text-rose-400 underline">
-                                                Send Another Message
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <form onSubmit={(e) => { e.preventDefault(); setContactSubmitted(true); }} className="space-y-4">
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Name</label>
-                                                    <input 
-                                                        type="text" required placeholder="Name"
-                                                        className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Email</label>
-                                                    <input 
-                                                        type="email" required placeholder="email@domain.com"
-                                                        className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
-                                                    />
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="space-y-1">
-                                                <label className="text-[10px] font-bold text-slate-400 block uppercase">Topic</label>
-                                                <select className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-rose-500/40 transition-all">
-                                                    <option value="video" className="bg-[#11131e] text-white">Video Editing & Production</option>
-                                                    <option value="graphic" className="bg-[#11131e] text-white">Graphic Design & Banners</option>
-                                                    <option value="research" className="bg-[#11131e] text-white">Economics Research Collaboration</option>
-                                                    <option value="accounting" className="bg-[#11131e] text-white">Accounting & Data Analysis</option>
-                                                    <option value="general" className="bg-[#11131e] text-white">General Inquiry</option>
-                                                </select>
-                                            </div>
-
-                                            <div className="space-y-1">
-                                                <label className="text-[10px] font-bold text-slate-400 block uppercase">Message</label>
-                                                <textarea 
-                                                    rows="4" required placeholder="Type your message details here..."
-                                                    className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
-                                                ></textarea>
-                                            </div>
-
-                                            <button 
-                                                type="submit"
-                                                className="w-full bg-gradient-to-r from-rose-600 to-indigo-600 hover:brightness-110 text-white font-bold text-xs py-3.5 px-6 rounded-xl shadow-lg transition-all"
-                                            >
-                                                Send Message
-                                            </button>
-                                        </form>
+                                    {/* Mobile Menu Dropdown Trigger */}
+                                    {!navCollapsed && (
+                                        <button 
+                                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                            className="md:hidden w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all text-xs"
+                                            title="Toggle Menu"
+                                        >
+                                            <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+                                        </button>
                                     )}
                                 </div>
+                            </nav>
+
+                            {/* Mobile Collapsible Menu Drawer */}
+                            {!navCollapsed && mobileMenuOpen && (
+                                <div className="pointer-events-auto md:hidden mt-2 w-full max-w-5xl glass-panel rounded-2xl p-4 border border-white/10 flex flex-col space-y-3 text-xs font-semibold text-slate-300 shadow-2xl">
+                                    <a href="#about" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition-all py-1">About</a>
+                                    <a href="#video-works" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-400 transition-all font-bold text-rose-300 py-1"><i className="fa-solid fa-play text-[10px] mr-1.5"></i>Video Editing</a>
+                                    <a href="#graphic-works" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-400 transition-all font-bold text-rose-300 py-1"><i className="fa-solid fa-palette text-[10px] mr-1.5"></i>Graphic Design</a>
+                                    <a href="#journey" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition-all py-1">Experience</a>
+                                    <a href="#skills-certs" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition-all py-1">Skills </a>
+                                    <a href="#ledger-simulator" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition-all py-1">Budget Game</a>
+                                    <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition-all py-1">Contact</a>
+                                    <button onClick={copyEmailToClipboard} className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-all">
+                                        <i className="fa-solid fa-envelope text-xs"></i>
+                                        <span>{copied ? 'Copied Email!' : 'Get Email'}</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Hero Section */}
+                        <header id="about" className="relative py-20 px-6 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
+                            <div className="lg:col-span-7 space-y-6 text-left">
+                                <AppearOnScroll delay={50}>
+                                    <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs text-slate-300">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span>MA Economics Student • Nalanda University (ICCR Scholar)</span>
+                                    </div>
+                                </AppearOnScroll>
+                                
+                                <AppearOnScroll delay={150}>
+                                    <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                                        <SingleTypewriter text="Hi, I am" speed={120} /> <br/>
+                                        <CipherReveal text="Polash Kumer Sarker" speed={38} revealDelay={600} />
+                                    </h1>
+                                </AppearOnScroll>
+
+                                <AppearOnScroll delay={250}>
+                                    <p className="text-sm sm:text-base text-slate-300 max-w-xl leading-relaxed font-light">
+                                        Economics Student, Content Creator.<span className="text-teal-400 font-medium"> Expertise in Accounting</span> with creative skills in <span className="text-rose-400 font-medium">Graphic Design & Video Editing</span>.
+                                    </p>
+                                </AppearOnScroll>
+
+                                <AppearOnScroll delay={350}>
+                                    <div className="pt-1 text-xs sm:text-sm">
+                                        <span className="text-slate-400 mr-2">Core Toolkit:</span>
+                                        <Typewriter words={["Python (NumPy, SciPy)", "IBM SPSS & Power BI", "Adobe Premiere Pro & Photoshop", "QuickBooks & Accounting"]} />
+                                    </div>
+                                </AppearOnScroll>
+
+                                <AppearOnScroll delay={450}>
+                                    <div className="flex flex-wrap items-center gap-3 pt-4">
+                                        <a href="#video-works" className="bg-gradient-to-r from-rose-500 to-indigo-600 text-white font-bold px-5 py-3 rounded-2xl hover:brightness-110 transition-all text-xs flex items-center space-x-2 shadow-lg shadow-rose-500/20">
+                                            <i className="fa-solid fa-circle-play text-sm"></i>
+                                            <span>Video Works</span>
+                                        </a>
+                                        <a href="#graphic-works" className="bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 text-white font-bold px-5 py-3 rounded-2xl transition-all text-xs flex items-center space-x-2">
+                                            <i className="fa-solid fa-palette text-rose-400"></i>
+                                            <span>Graphic Designs</span>
+                                        </a>
+                                        <button onClick={copyEmailToClipboard} className="bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 text-slate-300 font-bold px-4 py-3 rounded-2xl transition-all text-xs flex items-center space-x-1.5">
+                                            <i className="fa-regular fa-envelope"></i>
+                                            <span>{copied ? 'Copied!' : 'Email Me'}</span>
+                                        </button>
+                                    </div>
+                                </AppearOnScroll>
                             </div>
 
-                        </div>
-                    </section>
+                            {/* Interactive 3D Cursor-Tracking Portrait */}
+                            <div className="lg:col-span-5 flex justify-center relative">
+                                <AppearOnScroll delay={300}>
+                                    <InteractivePortrait />
+                                </AppearOnScroll>
+                            </div>
+                        </header>
 
-                    {/* Footer */}
-                    <footer className="pt-12 pb-8 text-center text-slate-500 text-[11px] border-t border-white/5 max-w-6xl mx-auto space-y-3">
-                        <div className="flex justify-center space-x-5 text-base">
-                            <a href="mailto:palash.kumer.pk@gmail.com" className="hover:text-rose-400 transition-colors"><i className="fa-regular fa-envelope"></i></a>
-                            <a href="https://www.linkedin.com/in/polash-kumer" target="_blank" className="hover:text-indigo-400 transition-colors"><i className="fa-brands fa-linkedin"></i></a>
-                            <a href="tel:+8801774961395" className="hover:text-teal-400 transition-colors"><i className="fa-solid fa-phone"></i></a>
-                        </div>
-                        <p>&copy; 2026 Polash Kumer. All Rights Reserved.</p>
-                        <p className="font-mono text-[9px] text-slate-600">Built with React, Tailwind CSS, & Multimedia Embed Interfaces.</p>
-                    </footer>
+                        {/* SECTION 1: VIDEO EDITING SHOWCASE */}
+                        <section id="video-works" className="py-20 px-6 border-t border-white/5 relative z-10 bg-black/30 backdrop-blur-[2px]">
+                            <div className="max-w-6xl mx-auto space-y-10">
+                                
+                                <AppearOnScroll>
+                                    <div className="text-center max-w-2xl mx-auto space-y-3">
+                                        <div className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 font-bold text-xs uppercase tracking-wider">
+                                            <i className="fa-solid fa-video mr-1.5"></i> Video Editing Works
+                                        </div>
+                                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                            Video Production & Editing Showcase
+                                        </h2>
+                                        <p className="text-slate-400 text-sm">
+                                            Scripting, video editing, and motion graphics created using <strong className="text-white">Adobe Premiere Pro, After Effects, & CapCut</strong>. Click any video card to play the full video!
+                                        </p>
+                                    </div>
+                                </AppearOnScroll>
 
+                                {/* Video Cards Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {videoWorks.map((vid, idx) => (
+                                        <AppearOnScroll key={vid.id} delay={idx * 120} className="flex">
+                                            <div className="glass-panel rounded-3xl overflow-hidden border border-white/10 hover:border-rose-500/40 transition-all shadow-xl group flex flex-col justify-between w-full">
+                                                <div>
+                                                    <div 
+                                                        onClick={() => setActiveVideoModal(vid)}
+                                                        className="relative h-48 overflow-hidden bg-black cursor-pointer group"
+                                                    >
+                                                        <img 
+                                                            src={vid.thumbnail} 
+                                                            alt={vid.title}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                                                            <div className="w-14 h-14 rounded-full bg-rose-600 group-hover:bg-rose-500 text-white flex items-center justify-center text-xl shadow-xl transform group-hover:scale-110 transition-all">
+                                                                <i className="fa-solid fa-play ml-1"></i>
+                                                            </div>
+                                                        </div>
+                                                        <span className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-white text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border border-white/10">
+                                                            {vid.category}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="p-5 space-y-2">
+                                                        <h3 className="text-base font-bold text-white group-hover:text-rose-400 transition-colors">
+                                                            {vid.title}
+                                                        </h3>
+                                                        <p className="text-xs text-slate-400 font-light leading-relaxed">
+                                                            {vid.description}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-5 pt-0 flex justify-between items-center border-t border-white/5 mt-4">
+                                                    <span className="text-[10px] font-mono text-rose-300 font-semibold">
+                                                        <i className="fa-solid fa-wand-magic-sparkles mr-1"></i>
+                                                        {vid.software}
+                                                    </span>
+                                                    <button 
+                                                        onClick={() => setActiveVideoModal(vid)}
+                                                        className="text-xs font-bold text-white hover:text-rose-400 flex items-center space-x-1"
+                                                    >
+                                                        <span>Watch Video</span>
+                                                        <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </AppearOnScroll>
+                                    ))}
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* PLAYABLE YOUTUBE EMBED MODAL */}
+                        {activeVideoModal && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+                                <div className="relative bg-[#0f111a] border border-white/10 rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col shadow-2xl">
+                                    
+                                    <div className="p-4 bg-slate-950 flex justify-between items-center border-b border-white/10">
+                                        <div className="flex items-center space-x-2">
+                                            <i className="fa-solid fa-circle-play text-rose-500"></i>
+                                            <span className="text-xs font-bold text-white">{activeVideoModal.title}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                            <a 
+                                                href={`https://www.youtube.com/watch?v=${activeVideoModal.youtubeId}`} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center space-x-1"
+                                            >
+                                                <i className="fa-brands fa-youtube"></i>
+                                                <span>Open on YouTube</span>
+                                            </a>
+                                            <button 
+                                                onClick={() => setActiveVideoModal(null)}
+                                                className="w-8 h-8 rounded-xl bg-white/10 text-white hover:bg-rose-500 flex items-center justify-center transition-all text-sm"
+                                            >
+                                                <i className="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="relative w-full pb-[56.25%] bg-black">
+                                        <iframe 
+                                            className="absolute top-0 left-0 w-full h-full"
+                                            src={`https://www.youtube.com/embed/${activeVideoModal.youtubeId}?autoplay=1&rel=0&modestbranding=1`} 
+                                            title={activeVideoModal.title}
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+
+                                    <div className="p-6 space-y-2 bg-slate-900">
+                                        <p className="text-xs text-slate-300 leading-relaxed">
+                                            {activeVideoModal.description}
+                                        </p>
+                                        <p className="text-[11px] font-mono text-teal-400">
+                                            Software used: {activeVideoModal.software}
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        )}
+
+                        {/* SECTION 2: GRAPHIC DESIGN SHOWCASE */}
+                        <section id="graphic-works" className="py-20 px-6 relative z-10">
+                            <div className="max-w-6xl mx-auto space-y-10">
+                                
+                                <AppearOnScroll>
+                                    <div className="text-center max-w-2xl mx-auto space-y-3">
+                                        <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                                            <i className="fa-solid fa-palette mr-1.5"></i> Graphic Design Works
+                                        </div>
+                                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                            Graphics & Visual Design Gallery
+                                        </h2>
+                                        <p className="text-slate-400 text-sm">
+                                            Social media graphics, banners, posters, and infographics crafted using <strong className="text-white">Adobe Photoshop & Canva</strong> for campus clubs, events, and research networks.
+                                        </p>
+                                    </div>
+                                </AppearOnScroll>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {graphicsWorks.map((gfx, idx) => (
+                                        <AppearOnScroll key={gfx.id} delay={idx * 80} className="flex">
+                                            <div 
+                                                onClick={() => setActiveGraphicModal(gfx)}
+                                                className="glass-panel rounded-3xl overflow-hidden border border-white/5 hover:border-indigo-500/40 transition-all cursor-pointer group shadow-lg flex flex-col justify-between w-full"
+                                            >
+                                                <div>
+                                                    <div className="relative h-48 overflow-hidden bg-slate-900">
+                                                        <img 
+                                                            src={gfx.image} 
+                                                            alt={gfx.title}
+                                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                                                            onError={(e) => {
+                                                                e.target.src = "https://placehold.co/600x400/0f1322/6366f1?text=Graphic+Design";
+                                                            }}
+                                                        />
+                                                        <div className="absolute inset-0 bg-indigo-950/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                                                            <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm shadow-lg">
+                                                                <i className="fa-solid fa-magnifying-glass-plus"></i>
+                                                            </div>
+                                                        </div>
+                                                        <span className="absolute top-2.5 left-2.5 bg-black/70 backdrop-blur-md text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border border-white/10">
+                                                            {gfx.type}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="p-4 space-y-1">
+                                                        <h3 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
+                                                            {gfx.title}
+                                                        </h3>
+                                                        <p className="text-[11px] text-slate-400 font-light line-clamp-2">
+                                                            {gfx.description}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-4 pt-0 border-t border-white/5 mt-2">
+                                                    <span className="text-[10px] font-mono text-indigo-400 font-medium">
+                                                        {gfx.tool}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </AppearOnScroll>
+                                    ))}
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* GRAPHIC DESIGN LIGHTBOX MODAL */}
+                        {activeGraphicModal && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+                                <div className="relative bg-[#0f111a] border border-white/10 rounded-3xl overflow-hidden max-w-3xl w-full flex flex-col shadow-2xl">
+                                    
+                                    <button 
+                                        onClick={() => setActiveGraphicModal(null)}
+                                        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl bg-black/70 border border-white/10 text-white hover:text-rose-400 flex items-center justify-center transition-all text-base"
+                                    >
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </button>
+
+                                    <div className="relative bg-black flex items-center justify-center max-h-[60vh] overflow-hidden p-4">
+                                        <img 
+                                            src={activeGraphicModal.image} 
+                                            alt={activeGraphicModal.title} 
+                                            className="max-h-[55vh] object-contain rounded-xl"
+                                        />
+                                    </div>
+
+                                    <div className="p-6 space-y-2 bg-slate-900 border-t border-white/5">
+                                        <div className="flex items-center space-x-2">
+                                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded">
+                                                {activeGraphicModal.tool}
+                                            </span>
+                                            <span className="text-[10px] font-mono text-slate-400">{activeGraphicModal.type}</span>
+                                        </div>
+                                        <h3 className="text-lg font-bold text-white">{activeGraphicModal.title}</h3>
+                                        <p className="text-xs text-slate-300 leading-relaxed">{activeGraphicModal.description}</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Timeline Section */}
+                        <section id="journey" className="py-20 px-6 border-t border-white/5 relative z-10 bg-black/20 backdrop-blur-[2px]">
+                            <div className="max-w-4xl mx-auto space-y-10">
+                                
+                                <AppearOnScroll>
+                                    <div className="text-center max-w-2xl mx-auto space-y-3">
+                                        <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
+                                            Career & Academic Record
+                                        </div>
+                                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                            Education & Experience Timeline
+                                        </h2>
+                                        <p className="text-slate-400 text-sm">
+                                            Official history from my CV including university degrees, internships, and student club leadership.
+                                        </p>
+                                    </div>
+                                </AppearOnScroll>
+
+                                <div className="relative border-l-2 border-slate-800 ml-4 md:ml-36 space-y-8">
+                                    {filteredTimeline.map((item, idx) => (
+                                        <AppearOnScroll key={idx} delay={idx * 90}>
+                                            <div className="relative group pl-6 md:pl-10">
+                                                <div className="hidden md:block absolute right-full mr-10 top-0 text-right w-28">
+                                                    <span className="font-mono font-bold text-slate-400 text-xs">{item.year}</span>
+                                                </div>
+
+                                                <div className="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700 group-hover:border-teal-400 transition-all"></div>
+
+                                                <div className="glass-panel hover:border-slate-700/60 rounded-3xl p-6 space-y-2 shadow-lg transition-all">
+                                                    <div className="md:hidden inline-block text-[11px] font-mono font-bold text-teal-400 mb-1">
+                                                        {item.year}
+                                                    </div>
+                                                    <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-teal-400 transition-colors">
+                                                        {item.title}
+                                                    </h3>
+                                                    <span className="text-xs font-medium bg-white/5 text-slate-300 px-3 py-1 rounded-md border border-white/10 inline-block">
+                                                        {item.institution}
+                                                    </span>
+                                                    <p className="text-xs text-slate-400 leading-relaxed font-light">
+                                                        {item.details}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </AppearOnScroll>
+                                    ))}
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* Certifications Section */}
+                        <section id="skills-certs" className="py-20 px-6 relative z-10 border-t border-white/5">
+                            <div className="max-w-6xl mx-auto space-y-10">
+                                
+                                <AppearOnScroll>
+                                    <div className="text-center max-w-2xl mx-auto space-y-3">
+                                        <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                                            Technical Competencies
+                                        </div>
+                                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                            Certifications & Training
+                                        </h2>
+                                        <p className="text-slate-400 text-sm">
+                                            Specialized training courses and official certificates completed alongside my university degrees.
+                                        </p>
+                                    </div>
+                                </AppearOnScroll>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {certifications.map((cert, idx) => (
+                                        <AppearOnScroll key={idx} delay={idx * 80}>
+                                            <div className="glass-panel rounded-2xl p-4 border border-white/5 flex items-center space-x-3.5 hover:border-indigo-500/30 transition-all">
+                                                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg shrink-0">
+                                                    <i className={`fa-solid ${cert.icon}`}></i>
+                                                </div>
+                                                <div className="text-xs">
+                                                    <h3 className="font-bold text-white">{cert.title}</h3>
+                                                    <p className="text-slate-400 text-[11px]">{cert.issuer}</p>
+                                                </div>
+                                            </div>
+                                        </AppearOnScroll>
+                                    ))}
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* Interactive Budget Simulator */}
+                        <section id="ledger-simulator" className="py-20 px-6 relative z-10 border-t border-white/5 bg-black/30 backdrop-blur-[2px]">
+                            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                                
+                                <div className="lg:col-span-6 space-y-6">
+                                    <AppearOnScroll>
+                                        <div className="space-y-6">
+                                            <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
+                                                Interactive Tool
+                                            </div>
+                                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                                Interactive Macroeconomic Policy Simulator
+                                            </h2>
+                                            <p className="text-slate-400 text-sm leading-relaxed">
+                                                Slide fiscal variables below to watch GDP growth, audit trust, and public metrics calculate in real-time!
+                                            </p>
+
+                                            <div className="space-y-4 pt-2">
+                                                <div className="space-y-1.5">
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="font-bold text-white">Public Sector Spending</span>
+                                                        <span className="font-mono text-teal-400 font-bold">{spending} Billion BDT</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" min="10" max="100" value={spending} 
+                                                        onChange={(e) => setSpending(parseInt(e.target.value))}
+                                                        className="w-full accent-teal-400 bg-white/5 h-2 rounded-lg cursor-pointer"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-1.5">
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="font-bold text-white">Taxation Rate</span>
+                                                        <span className="font-mono text-teal-400 font-bold">{taxRate}%</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" min="15" max="60" value={taxRate} 
+                                                        onChange={(e) => setTaxRate(parseInt(e.target.value))}
+                                                        className="w-full accent-teal-400 bg-white/5 h-2 rounded-lg cursor-pointer"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-1.5">
+                                                    <div className="flex justify-between items-center text-xs">
+                                                        <span className="font-bold text-white">Monetary Policy Rate</span>
+                                                        <span className="font-mono text-teal-400 font-bold">{interestRate}%</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" min="2.0" max="12.0" step="0.5" value={interestRate} 
+                                                        onChange={(e) => setInterestRate(parseFloat(e.target.value))}
+                                                        className="w-full accent-teal-400 bg-white/5 h-2 rounded-lg cursor-pointer"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AppearOnScroll>
+                                </div>
+
+                                <div className="lg:col-span-6">
+                                    <AppearOnScroll delay={150}>
+                                        <div className="glass-panel rounded-3xl p-6 border border-white/5 bg-slate-900/40 shadow-2xl space-y-5">
+                                            <h3 className="font-bold text-sm text-white border-b border-white/5 pb-2">
+                                                <i className="fa-solid fa-chart-line mr-2 text-teal-400"></i>
+                                                Live Economic Equilibrium Metrics
+                                            </h3>
+
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
+                                                    <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">GDP Growth</span>
+                                                    <span className="text-xl font-extrabold text-emerald-400 font-mono">{gdpGrowth}%</span>
+                                                </div>
+
+                                                <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
+                                                    <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">Audit Credibility</span>
+                                                    <span className="text-xl font-extrabold text-cyan-400 font-mono">{auditRating}%</span>
+                                                </div>
+
+                                                <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
+                                                    <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">System Security</span>
+                                                    <span className="text-xl font-extrabold text-indigo-400 font-mono">{systemSafety}%</span>
+                                                </div>
+
+                                                <div className="bg-[#0b0d14]/60 border border-white/5 rounded-2xl p-3.5 text-center">
+                                                    <span className="text-[10px] font-bold text-slate-400 block uppercase mb-1">Public Satisfaction</span>
+                                                    <span className="text-xl font-extrabold text-rose-400 font-mono">{crowdSatisfaction}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AppearOnScroll>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* Shell Diagnostic Terminal */}
+                        <section id="cyber-terminal" className="py-20 px-6 relative z-10">
+                            <div className="max-w-4xl mx-auto space-y-6">
+                                <AppearOnScroll>
+                                    <div className="text-center max-w-2xl mx-auto space-y-2">
+                                        <div className="inline-block px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 font-bold text-xs uppercase tracking-wider">
+                                            Interactive Shell
+                                        </div>
+                                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                            Interactive CV Diagnostic Terminal
+                                        </h2>
+                                        <p className="text-slate-400 text-xs sm:text-sm">
+                                            Type commands directly to query my academic qualifications, experience, or references.
+                                        </p>
+                                    </div>
+                                </AppearOnScroll>
+
+                                <AppearOnScroll delay={150}>
+                                    <div className="glass-panel border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[380px]">
+                                        <div className="bg-[#0b0d14] px-6 py-3 border-b border-slate-900 flex justify-between items-center text-xs">
+                                            <div className="flex space-x-2">
+                                                <div className="w-3 h-3 rounded-full bg-rose-500/40"></div>
+                                                <div className="w-3 h-3 rounded-full bg-amber-500/40"></div>
+                                                <div className="w-3 h-3 rounded-full bg-emerald-500/40"></div>
+                                            </div>
+                                            <div className="font-mono text-slate-500 font-bold text-[11px]">polash-cv-terminal.sh</div>
+                                            <div className="w-4"></div>
+                                        </div>
+
+                                        <div className="flex-1 p-5 overflow-y-auto font-mono text-xs space-y-3 bg-[#0b0d14]/95">
+                                            {terminalHistory.map((line, idx) => (
+                                                <div key={idx} className="space-y-1">
+                                                    {line.type === 'input' ? (
+                                                        <div className="flex items-start space-x-2 text-teal-400">
+                                                            <span className="font-bold">polash-guest:~$&nbsp;</span>
+                                                            <span className="text-slate-100">{line.text}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-slate-400 pl-4 whitespace-pre-wrap leading-relaxed text-[11px]">
+                                                            {line.text}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            <div ref={terminalEndRef}></div>
+                                        </div>
+
+                                        <div className="bg-slate-950 px-4 py-2 border-t border-slate-900 flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
+                                            <span>Try these commands:</span>
+                                            <button onClick={() => runQuickCommand('skills')} className="bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/10 px-2 py-0.5 rounded transition-all">skills</button>
+                                            <button onClick={() => runQuickCommand('scholarship')} className="bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/10 px-2 py-0.5 rounded transition-all">scholarship</button>
+                                            <button onClick={() => runQuickCommand('experience')} className="bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/10 px-2 py-0.5 rounded transition-all">experience</button>
+                                        </div>
+
+                                        <form onSubmit={handleTerminalSubmit} className="bg-slate-950 p-3.5 border-t border-slate-900 flex items-center space-x-2">
+                                            <span className="font-mono text-xs text-teal-400 font-bold">polash-guest:~$&nbsp;</span>
+                                            <input 
+                                                type="text" 
+                                                value={terminalInput} 
+                                                onChange={(e) => setTerminalInput(e.target.value)}
+                                                placeholder="Type 'help' and press Enter..."
+                                                className="bg-transparent text-xs font-mono text-white outline-none flex-1 border-none focus:ring-0"
+                                            />
+                                            <button type="submit" className="text-teal-400 hover:text-white transition-all text-xs font-bold px-2">
+                                                <i className="fa-solid fa-play"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </AppearOnScroll>
+                            </div>
+                        </section>
+
+                        {/* Contact & References Section */}
+                        <section id="contact" className="py-20 px-6 border-t border-white/5 relative z-10">
+                            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+                                
+                                <div className="lg:col-span-5 space-y-6">
+                                    <AppearOnScroll>
+                                        <div className="space-y-6">
+                                            <div className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 font-bold text-xs uppercase tracking-wider">
+                                                Get In Touch
+                                            </div>
+                                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                                Let's Connect & Collaborate!
+                                            </h2>
+                                            <p className="text-slate-400 text-sm leading-relaxed">
+                                                Open for research collaborations, video editing projects, graphic design commissions, or academic opportunities.
+                                            </p>
+
+                                            <div className="space-y-3.5 pt-2">
+                                                <div className="flex items-center space-x-3 text-slate-300">
+                                                    <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400">
+                                                        <i className="fa-solid fa-map-pin"></i>
+                                                    </div>
+                                                    <div className="text-xs">
+                                                        <p className="font-bold text-white">Location</p>
+                                                        <p className="text-slate-400">Rajshahi, Bangladesh / Nalanda University, India</p>
+                                                    </div>
+                                                </div>
+
+                                                <div onClick={copyEmailToClipboard} className="flex items-center space-x-3 text-slate-300 cursor-pointer group">
+                                                    <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400 group-hover:bg-rose-500/10 transition-all">
+                                                        <i className="fa-solid fa-envelope"></i>
+                                                    </div>
+                                                    <div className="text-xs">
+                                                        <p className="font-bold text-white group-hover:text-rose-400 transition-colors">Primary Email (Click to copy)</p>
+                                                        <p className="text-slate-400 font-mono">palash.kumer.pk@gmail.com</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center space-x-3 text-slate-300">
+                                                    <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-rose-400">
+                                                        <i className="fa-solid fa-phone"></i>
+                                                    </div>
+                                                    <div className="text-xs">
+                                                        <p className="font-bold text-white">Phone / WhatsApp</p>
+                                                        <p className="text-slate-400 font-mono">+8801774961395</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-4 space-y-2 border-t border-white/5">
+                                                <h3 className="text-xs font-bold text-white uppercase tracking-wider text-slate-400">Academic References</h3>
+                                                <div className="space-y-2 text-xs">
+                                                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 backdrop-blur-md">
+                                                        <p className="font-bold text-white">Dr. Kishore Kumar Dhavala</p>
+                                                        <p className="text-slate-400 text-[11px]">Associate Professor, Nalanda University</p>
+                                                        <p className="text-teal-400 font-mono text-[10px]">k.dhavala@nalandauniv.edu.in</p>
+                                                    </div>
+                                                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 backdrop-blur-md">
+                                                        <p className="font-bold text-white">Anutosh Kumar Pramanik</p>
+                                                        <p className="text-slate-400 text-[11px]">Assistant Professor, Rajshahi College</p>
+                                                        <p className="text-teal-400 font-mono text-[10px]">anuais12@gmail.com</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AppearOnScroll>
+                                </div>
+
+                                <div className="lg:col-span-7">
+                                    <AppearOnScroll delay={150}>
+                                        <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/5 bg-slate-900/40 relative shadow-2xl">
+                                            {contactSubmitted ? (
+                                                <div className="text-center py-12 space-y-4">
+                                                    <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-3xl mx-auto animate-bounce">
+                                                        <i className="fa-solid fa-envelope-circle-check"></i>
+                                                    </div>
+                                                    <h3 className="text-xl font-bold text-white">Message Received!</h3>
+                                                    <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                                                        Thank you for reaching out, Sree Polash Kumer Sarker will respond shortly.
+                                                    </p>
+                                                    <button onClick={() => setContactSubmitted(false)} className="text-xs font-bold text-rose-400 underline">
+                                                        Send Another Message
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <form onSubmit={(e) => { e.preventDefault(); setContactSubmitted(true); }} className="space-y-4">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Name</label>
+                                                            <input 
+                                                                type="text" required placeholder="Name"
+                                                                className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-bold text-slate-400 block uppercase">Your Email</label>
+                                                            <input 
+                                                                type="email" required placeholder="email@domain.com"
+                                                                className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-400 block uppercase">Topic</label>
+                                                        <select className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-rose-500/40 transition-all">
+                                                            <option value="video" className="bg-[#11131e] text-white">Video Editing & Production</option>
+                                                            <option value="graphic" className="bg-[#11131e] text-white">Graphic Design & Banners</option>
+                                                            <option value="research" className="bg-[#11131e] text-white">Economics Research Collaboration</option>
+                                                            <option value="accounting" className="bg-[#11131e] text-white">Accounting & Data Analysis</option>
+                                                            <option value="general" className="bg-[#11131e] text-white">General Inquiry</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-400 block uppercase">Message</label>
+                                                        <textarea 
+                                                            rows="4" required placeholder="Type your message details here..."
+                                                            className="w-full bg-[#0b0d14]/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-rose-500/40 transition-all"
+                                                        ></textarea>
+                                                    </div>
+
+                                                    <button 
+                                                        type="submit"
+                                                        className="w-full bg-gradient-to-r from-rose-600 to-indigo-600 hover:brightness-110 text-white font-bold text-xs py-3.5 px-6 rounded-xl shadow-lg transition-all"
+                                                    >
+                                                        Send Message
+                                                    </button>
+                                                </form>
+                                            )}
+                                        </div>
+                                    </AppearOnScroll>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* Footer */}
+                        <footer className="pt-12 pb-8 text-center text-slate-500 text-[11px] border-t border-white/5 max-w-6xl mx-auto space-y-3">
+                            <AppearOnScroll>
+                                <div className="space-y-3">
+                                    <div className="flex justify-center space-x-5 text-base">
+                                        <a href="mailto:palash.kumer.pk@gmail.com" className="hover:text-rose-400 transition-colors"><i className="fa-regular fa-envelope"></i></a>
+                                        <a href="https://www.linkedin.com/in/polash-kumer" target="_blank" className="hover:text-indigo-400 transition-colors"><i className="fa-brands fa-linkedin"></i></a>
+                                        <a href="tel:+8801774961395" className="hover:text-teal-400 transition-colors"><i className="fa-solid fa-phone"></i></a>
+                                    </div>
+                                    <p>&copy; 2026 Polash Kumer. All Rights Reserved.</p>
+                                    <p className="font-mono text-[9px] text-slate-600">Built with React, Tailwind CSS, & Multimedia Embed Interfaces.</p>
+                                </div>
+                            </AppearOnScroll>
+                        </footer>
+
+                    </div>
                 </div>
             );
         };
